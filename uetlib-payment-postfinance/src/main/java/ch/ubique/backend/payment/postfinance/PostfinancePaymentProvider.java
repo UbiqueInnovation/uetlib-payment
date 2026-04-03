@@ -7,12 +7,14 @@ import ch.postfinancecheckout.sdk.model.LineItemCreate;
 import ch.postfinancecheckout.sdk.model.LineItemType;
 import ch.postfinancecheckout.sdk.model.Transaction;
 import ch.postfinancecheckout.sdk.model.TransactionCreate;
+import ch.postfinancecheckout.sdk.model.TransactionState;
 import ch.postfinancecheckout.sdk.service.TransactionsService;
 import ch.postfinancecheckout.sdk.service.WebhookEncryptionKeysService;
 import ch.ubique.backend.payment.PaymentBillingAddress;
 import ch.ubique.backend.payment.PaymentFailureCode;
 import ch.ubique.backend.payment.PaymentInitCommand;
 import ch.ubique.backend.payment.PaymentInitResult;
+import ch.ubique.backend.payment.PaymentMethod;
 import ch.ubique.backend.payment.PaymentPayer;
 import ch.ubique.backend.payment.PaymentProvider;
 import ch.ubique.backend.payment.PaymentProviderType;
@@ -180,7 +182,13 @@ public class PostfinancePaymentProvider implements PaymentProvider {
             String currency = transaction.getCurrency();
             String failureReason = extractFailureReason(transaction);
             return PaymentStatusResult.success(
-                    status, currency, transaction.getAuthorizationAmount(), failureReason);
+                    status,
+                    transaction.getState() == null ? null : transaction.getState().name(),
+                    currency,
+                    transaction.getAuthorizationAmount(),
+                    PaymentMethod.UNKNOWN,
+                    failureReason,
+                    failureReason);
         } catch (ApiException e) {
             logger.error(
                     "Failed to get transaction status for providerTransactionId {}",
@@ -236,7 +244,14 @@ public class PostfinancePaymentProvider implements PaymentProvider {
         }
 
         return PaymentWebhookResult.success(
-                new PaymentWebhookEvent(webhookPayload.entityId().toString(), transactionStatus));
+                new PaymentWebhookEvent(
+                        webhookPayload.entityId().toString(),
+                        transactionStatus,
+                        webhookPayload.state(),
+                        null,
+                        null,
+                        null,
+                        null));
     }
 
     private String extractFailureReason(Transaction transaction) {
@@ -306,7 +321,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
             logger.error(UNKNOWN_TRANSACTION_STATE_MESSAGE);
             return null;
         }
-        return TransactionStatus.valueOf(transaction.getState().name());
+        return mapTransactionState(transaction.getState());
     }
 
     private boolean isSignatureValid(String payload, String signatureHeader) {
@@ -347,7 +362,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
             PostfinanceWebhookPayload webhookPayload) {
         if (webhookPayload.state() != null && !webhookPayload.state().isBlank()) {
             try {
-                return TransactionStatus.valueOf(webhookPayload.state());
+                return mapTransactionState(TransactionState.valueOf(webhookPayload.state()));
             } catch (IllegalArgumentException e) {
                 logger.info("Unknown PostFinance transaction state {}", webhookPayload.state());
             }
@@ -357,7 +372,20 @@ public class PostfinancePaymentProvider implements PaymentProvider {
         if (!statusResult.successful()) {
             return null;
         }
-        return statusResult.status();
+        return statusResult.paymentStatus();
+    }
+
+    private TransactionStatus mapTransactionState(final TransactionState state) {
+        if (state == null) {
+            return null;
+        }
+        return switch (state) {
+            case CREATE, PENDING, CONFIRMED, PROCESSING -> TransactionStatus.PENDING;
+            case AUTHORIZED -> TransactionStatus.AUTHORIZED;
+            case COMPLETED, FULFILL -> TransactionStatus.COMPLETED;
+            case VOIDED -> TransactionStatus.VOIDED;
+            case FAILED, DECLINE -> TransactionStatus.FAILED;
+        };
     }
 
     private boolean hasPayerName(PaymentPayer payer) {

@@ -1,4 +1,16 @@
 package ch.ubique.backend.payment;
 
 /** Neutral webhook event emitted by a payment provider adapter. */
-public record PaymentWebhookEvent(String providerTransactionId, TransactionStatus status) {}
+public record PaymentWebhookEvent(
+        String providerTransactionId,
+        TransactionStatus paymentStatus,
+        String rawProviderStatus,
+        PaymentMethod paymentMethod,
+        String currency,
+        String failureReason,
+        String failureMessage) {
+
+    public PaymentWebhookEvent(String providerTransactionId, TransactionStatus paymentStatus) {
+        this(providerTransactionId, paymentStatus, null, null, null, null, null);
+    }
+}

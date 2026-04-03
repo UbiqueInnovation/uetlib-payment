@@ -5,23 +5,37 @@ import java.math.BigDecimal;
 /** Neutral result returned when fetching a payment status from a provider. */
 public record PaymentStatusResult(
         boolean successful,
-        TransactionStatus status,
+        TransactionStatus paymentStatus,
+        String rawProviderStatus,
         String currency,
         BigDecimal authorizationAmount,
+        PaymentMethod paymentMethod,
         String failureReason,
+        String failureMessage,
         PaymentFailure failure) {
 
     public static PaymentStatusResult success(
-            TransactionStatus status,
+            TransactionStatus paymentStatus,
+            String rawProviderStatus,
             String currency,
             BigDecimal authorizationAmount,
-            String failureReason) {
+            PaymentMethod paymentMethod,
+            String failureReason,
+            String failureMessage) {
         return new PaymentStatusResult(
-                true, status, currency, authorizationAmount, failureReason, null);
+                true,
+                paymentStatus,
+                rawProviderStatus,
+                currency,
+                authorizationAmount,
+                paymentMethod,
+                failureReason,
+                failureMessage,
+                null);
     }
 
     public static PaymentStatusResult failure(PaymentFailureCode code, String message) {
         return new PaymentStatusResult(
-                false, null, null, null, null, new PaymentFailure(code, message));
+                false, null, null, null, null, null, null, null, new PaymentFailure(code, message));
     }
 }

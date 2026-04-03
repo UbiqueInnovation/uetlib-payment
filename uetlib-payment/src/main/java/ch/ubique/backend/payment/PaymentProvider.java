@@ -21,4 +21,28 @@ public interface PaymentProvider {
 
     /** Validates and parses a raw provider webhook into a neutral webhook result. */
     PaymentWebhookResult processWebhook(String rawPayload, Map<String, String> headers);
+
+    /**
+     * Captures or settles a previously authorized provider-side payment transaction.
+     *
+     * <p>Providers that do not support a separate capture step may keep the default unsupported
+     * implementation.
+     */
+    default PaymentOperationResult capture(PaymentCaptureCommand command) {
+        return PaymentOperationResult.failure(
+                PaymentFailureCode.UNSUPPORTED_OPERATION,
+                "Payment capture is not supported by provider " + getType());
+    }
+
+    /**
+     * Cancels or voids a previously initialized or authorized provider-side payment transaction.
+     *
+     * <p>Providers that do not support a separate cancel step may keep the default unsupported
+     * implementation.
+     */
+    default PaymentOperationResult cancel(PaymentCancelCommand command) {
+        return PaymentOperationResult.failure(
+                PaymentFailureCode.UNSUPPORTED_OPERATION,
+                "Payment cancel is not supported by provider " + getType());
+    }
 }

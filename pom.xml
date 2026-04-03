@@ -21,6 +21,7 @@
 
     <modules>
         <module>uetlib-payment</module>
+        <module>uetlib-payment-datatrans</module>
         <module>uetlib-payment-postfinance</module>
     </modules>
 

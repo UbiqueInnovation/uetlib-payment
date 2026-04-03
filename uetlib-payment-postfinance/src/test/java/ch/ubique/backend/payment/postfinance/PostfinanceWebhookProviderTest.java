@@ -57,7 +57,7 @@ class PostfinanceWebhookProviderTest {
 
         assertTrue(result.successful());
         assertEquals("123", result.event().providerTransactionId());
-        assertEquals(TransactionStatus.COMPLETED, result.event().status());
+        assertEquals(TransactionStatus.COMPLETED, result.event().paymentStatus());
     }
 
     @Test
@@ -79,14 +79,22 @@ class PostfinanceWebhookProviderTest {
                 """
                 {"entityId":123,"listenerEntityTechnicalName":"Transaction","spaceId":34121,"state":"UNKNOWN"}
                 """;
-        doReturn(PaymentStatusResult.success(TransactionStatus.AUTHORIZED, "CHF", null, null))
+        doReturn(
+                        PaymentStatusResult.success(
+                                TransactionStatus.AUTHORIZED,
+                                "AUTHORIZED",
+                                "CHF",
+                                null,
+                                ch.ubique.backend.payment.PaymentMethod.UNKNOWN,
+                                null,
+                                null))
                 .when(provider)
                 .getStatus("123");
 
         var result = provider.processWebhook(payload, Map.of());
 
         assertTrue(result.successful());
-        assertEquals(TransactionStatus.AUTHORIZED, result.event().status());
+        assertEquals(TransactionStatus.AUTHORIZED, result.event().paymentStatus());
     }
 
     @Test

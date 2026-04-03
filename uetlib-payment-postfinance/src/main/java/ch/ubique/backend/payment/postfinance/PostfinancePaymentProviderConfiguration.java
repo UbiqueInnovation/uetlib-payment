@@ -12,12 +12,12 @@ public class PostfinancePaymentProviderConfiguration {
     @Bean
     public PostfinancePaymentProvider postfinancePaymentProvider(
             ObjectMapper objectMapper,
-            @Value("${postfinance.spaceId}") long spaceId,
-            @Value("${postfinance.userId}") long userId,
-            @Value("${postfinance.authKey}") String authKey,
-            @Value("${postfinance.product.sku}") String productSku,
-            @Value("${postfinance.product.uniqueId}") String productUniqueId,
-            @Value("${postfinance.webhook.signatureValidationEnabled:true}")
+            @Value("${payment.postfinance.space-id}") long spaceId,
+            @Value("${payment.postfinance.user-id}") long userId,
+            @Value("${payment.postfinance.auth-key}") String authKey,
+            @Value("${payment.postfinance.product.sku}") String productSku,
+            @Value("${payment.postfinance.product.unique-id}") String productUniqueId,
+            @Value("${payment.postfinance.webhook.signature-validation-enabled:true}")
                     boolean signatureValidationEnabled) {
         return new PostfinancePaymentProvider(
                 objectMapper,

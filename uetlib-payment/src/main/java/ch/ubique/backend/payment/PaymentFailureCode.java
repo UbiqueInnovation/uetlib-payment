@@ -4,5 +4,6 @@ package ch.ubique.backend.payment;
 public enum PaymentFailureCode {
     PROVIDER_API_ERROR,
     INVALID_PROVIDER_RESPONSE,
-    INVALID_PROVIDER_REFERENCE
+    INVALID_PROVIDER_REFERENCE,
+    UNSUPPORTED_OPERATION
 }

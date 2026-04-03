@@ -120,7 +120,7 @@ class PostfinancePaymentProviderTest {
         PaymentStatusResult response = postfinancePaymentProvider.getStatus("1");
 
         assertEquals(true, response.successful());
-        assertEquals(TransactionStatus.AUTHORIZED, response.status());
+        assertEquals(TransactionStatus.AUTHORIZED, response.paymentStatus());
     }
 
     @Test
