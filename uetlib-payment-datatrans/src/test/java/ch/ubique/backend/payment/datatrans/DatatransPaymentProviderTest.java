@@ -9,21 +9,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import ch.ubique.backend.payment.PaymentCancelCommand;
-import ch.ubique.backend.payment.PaymentCaptureCommand;
-import ch.ubique.backend.payment.PaymentCurrency;
-import ch.ubique.backend.payment.PaymentInitCommand;
-import ch.ubique.backend.payment.PaymentMethod;
-import ch.ubique.backend.payment.PaymentOperationResult;
-import ch.ubique.backend.payment.PaymentPayer;
-import ch.ubique.backend.payment.PaymentProviderType;
-import ch.ubique.backend.payment.TransactionStatus;
-import ch.ubique.datatrans.model.transactions.DatatransCurrency;
-import ch.ubique.datatrans.model.transactions.DatatransInitializeTransactionResponse;
-import ch.ubique.datatrans.model.transactions.DatatransPaymentMethod;
-import ch.ubique.datatrans.model.transactions.DatatransTransactionStatus;
-import ch.ubique.datatrans.model.transactions.DatatransTransactionStatusResponse;
-import ch.ubique.datatrans.model.transactions.DatatransTransactionType;
+import ch.ubique.backend.payment.*;
+import ch.ubique.datatrans.model.transactions.*;
 import ch.ubique.datatrans.service.DatatransTransactionClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,7 +39,8 @@ class DatatransPaymentProviderTest {
     @BeforeEach
     void setUp() {
         restClient = mock(RestClient.class);
-        requestSpec = mock(RestClient.RequestBodyUriSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
+        requestSpec =
+                mock(RestClient.RequestBodyUriSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
         org.mockito.Mockito.lenient().when(restClient.post()).thenReturn(requestSpec);
         org.mockito.Mockito.lenient()
                 .when(requestSpec.uri(anyString(), any(Object[].class)))
@@ -79,7 +67,8 @@ class DatatransPaymentProviderTest {
     @Test
     void initiate_buildsDatatransTransactionAndReturnsNeutralResult() {
         when(datatransTransactionClient.initializeTransaction(any()))
-                .thenReturn(new DatatransInitializeTransactionResponse("trx-1", "https://redirect"));
+                .thenReturn(
+                        new DatatransInitializeTransactionResponse("trx-1", "https://redirect"));
 
         final var result =
                 provider.initiate(
@@ -90,6 +79,7 @@ class DatatransPaymentProviderTest {
                                 "Workspace booking",
                                 "https://example.com/success",
                                 "https://example.com/cancel",
+                                PaymentCaptureMode.MANUAL,
                                 new PaymentPayer("public-user", null, null, null),
                                 null));
 
@@ -98,11 +88,9 @@ class DatatransPaymentProviderTest {
         assertEquals("https://redirect", result.javascriptUrl());
         assertEquals(PaymentProviderType.DATATRANS, provider.getType());
 
-        final ArgumentCaptor<ch.ubique.datatrans.model.transactions.DatatransInitializeTransaction>
-                captor =
-                        ArgumentCaptor.forClass(
-                                ch.ubique.datatrans.model.transactions.DatatransInitializeTransaction
-                                        .class);
+        final ArgumentCaptor<DatatransInitializeTransaction> captor =
+                ArgumentCaptor.forClass(DatatransInitializeTransaction.class);
+
         verify(datatransTransactionClient).initializeTransaction(captor.capture());
         assertEquals("ref-1", captor.getValue().refno());
         assertEquals(Integer.valueOf(1130), captor.getValue().amount());
@@ -185,16 +173,14 @@ class DatatransPaymentProviderTest {
         final PaymentOperationResult result =
                 provider.capture(
                         new PaymentCaptureCommand(
-                                "trx-1",
-                                "ref-1",
-                                new BigDecimal("11.30"),
-                                PaymentCurrency.CHF));
+                                "trx-1", "ref-1", new BigDecimal("11.30"), PaymentCurrency.CHF));
 
         assertTrue(result.successful());
         verify(requestSpec)
-                .uri("https://api.sandbox.datatrans.com/v1/transactions/{transactionId}/settle", "trx-1");
-        verify(requestSpec)
-                .body(Map.of("refno", "ref-1", "amount", 1130, "currency", "CHF"));
+                .uri(
+                        "https://api.sandbox.datatrans.com/v1/transactions/{transactionId}/settle",
+                        "trx-1");
+        verify(requestSpec).body(Map.of("refno", "ref-1", "amount", 1130, "currency", "CHF"));
     }
 
     @Test
@@ -204,7 +190,9 @@ class DatatransPaymentProviderTest {
 
         assertTrue(result.successful());
         verify(requestSpec)
-                .uri("https://api.sandbox.datatrans.com/v1/transactions/{transactionId}/cancel", "trx-1");
+                .uri(
+                        "https://api.sandbox.datatrans.com/v1/transactions/{transactionId}/cancel",
+                        "trx-1");
         verify(requestSpec).body(Map.of("refno", "ref-1"));
     }
 }

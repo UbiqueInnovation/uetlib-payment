@@ -6,22 +6,12 @@ import ch.postfinancecheckout.sdk.model.AddressCreate;
 import ch.postfinancecheckout.sdk.model.LineItemCreate;
 import ch.postfinancecheckout.sdk.model.LineItemType;
 import ch.postfinancecheckout.sdk.model.Transaction;
+import ch.postfinancecheckout.sdk.model.TransactionCompletionBehavior;
 import ch.postfinancecheckout.sdk.model.TransactionCreate;
 import ch.postfinancecheckout.sdk.model.TransactionState;
 import ch.postfinancecheckout.sdk.service.TransactionsService;
 import ch.postfinancecheckout.sdk.service.WebhookEncryptionKeysService;
-import ch.ubique.backend.payment.PaymentBillingAddress;
-import ch.ubique.backend.payment.PaymentFailureCode;
-import ch.ubique.backend.payment.PaymentInitCommand;
-import ch.ubique.backend.payment.PaymentInitResult;
-import ch.ubique.backend.payment.PaymentMethod;
-import ch.ubique.backend.payment.PaymentPayer;
-import ch.ubique.backend.payment.PaymentProvider;
-import ch.ubique.backend.payment.PaymentProviderType;
-import ch.ubique.backend.payment.PaymentStatusResult;
-import ch.ubique.backend.payment.PaymentWebhookEvent;
-import ch.ubique.backend.payment.PaymentWebhookResult;
-import ch.ubique.backend.payment.TransactionStatus;
+import ch.ubique.backend.payment.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -91,11 +81,11 @@ public class PostfinancePaymentProvider implements PaymentProvider {
     public PaymentInitResult initiate(PaymentInitCommand command) {
         TransactionsService service = createTransactionsService();
         String merchantReference = command.reference();
-
         // The neutral payment command is translated to the PostFinance transaction shape here.
         TransactionCreate tc = new TransactionCreate();
         tc.setCurrency(command.currency().name());
         tc.setMerchantReference(merchantReference);
+        tc.setCompletionBehavior(resolveCompletionBehavior(command));
         if (command.successUrl() != null) {
             tc.setSuccessUrl(command.successUrl());
         }
@@ -206,6 +196,13 @@ public class PostfinancePaymentProvider implements PaymentProvider {
                     PaymentFailureCode.INVALID_PROVIDER_REFERENCE,
                     "Invalid PostFinance transaction id");
         }
+    }
+
+    private TransactionCompletionBehavior resolveCompletionBehavior(PaymentInitCommand command) {
+        if (command.captureMode() == PaymentCaptureMode.AUTOMATIC) {
+            return TransactionCompletionBehavior.COMPLETE_IMMEDIATELY;
+        }
+        return TransactionCompletionBehavior.COMPLETE_DEFERRED;
     }
 
     @Override

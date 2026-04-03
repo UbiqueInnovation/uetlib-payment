@@ -13,14 +13,7 @@ import ch.postfinancecheckout.sdk.model.Transaction;
 import ch.postfinancecheckout.sdk.model.TransactionCreate;
 import ch.postfinancecheckout.sdk.model.TransactionState;
 import ch.postfinancecheckout.sdk.service.TransactionsService;
-import ch.ubique.backend.payment.PaymentBillingAddress;
-import ch.ubique.backend.payment.PaymentCurrency;
-import ch.ubique.backend.payment.PaymentInitCommand;
-import ch.ubique.backend.payment.PaymentInitResult;
-import ch.ubique.backend.payment.PaymentPayer;
-import ch.ubique.backend.payment.PaymentProviderType;
-import ch.ubique.backend.payment.PaymentStatusResult;
-import ch.ubique.backend.payment.TransactionStatus;
+import ch.ubique.backend.payment.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -67,6 +60,7 @@ class PostfinancePaymentProviderTest {
                         "Test Item",
                         "https://example.com/success",
                         "https://example.com/failed",
+                        PaymentCaptureMode.MANUAL,
                         new PaymentPayer("12345", "Ada", "Lovelace", "ada@example.com"),
                         billingAddress);
 

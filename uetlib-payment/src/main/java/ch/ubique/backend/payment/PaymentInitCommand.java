@@ -10,5 +10,6 @@ public record PaymentInitCommand(
         String description,
         String successUrl,
         String failedUrl,
+        PaymentCaptureMode captureMode,
         PaymentPayer payer,
         PaymentBillingAddress billingAddress) {}

@@ -1,18 +1,6 @@
 package ch.ubique.backend.payment.datatrans;
 
-import ch.ubique.backend.payment.PaymentCancelCommand;
-import ch.ubique.backend.payment.PaymentCaptureCommand;
-import ch.ubique.backend.payment.PaymentFailureCode;
-import ch.ubique.backend.payment.PaymentInitCommand;
-import ch.ubique.backend.payment.PaymentInitResult;
-import ch.ubique.backend.payment.PaymentMethod;
-import ch.ubique.backend.payment.PaymentOperationResult;
-import ch.ubique.backend.payment.PaymentProvider;
-import ch.ubique.backend.payment.PaymentProviderType;
-import ch.ubique.backend.payment.PaymentStatusResult;
-import ch.ubique.backend.payment.PaymentWebhookEvent;
-import ch.ubique.backend.payment.PaymentWebhookResult;
-import ch.ubique.backend.payment.TransactionStatus;
+import ch.ubique.backend.payment.*;
 import ch.ubique.datatrans.model.transactions.DatatransCurrency;
 import ch.ubique.datatrans.model.transactions.DatatransInitializeTransaction;
 import ch.ubique.datatrans.model.transactions.DatatransInitializeTransactionRedirect;
@@ -93,7 +81,7 @@ public class DatatransPaymentProvider implements PaymentProvider {
                         .refno(command.reference())
                         .amount(toDatatransAmount(command.amount()))
                         .paymentMethods(DEFAULT_PAYMENT_METHODS)
-                        .autoSettle(false)
+                        .autoSettle(command.captureMode() == PaymentCaptureMode.AUTOMATIC)
                         .language(normalizeDatatransLanguage(LocaleContextHolder.getLocale()))
                         .theme(new DatatransInitializeTransactionTheme())
                         .redirect(buildRedirect(command))
