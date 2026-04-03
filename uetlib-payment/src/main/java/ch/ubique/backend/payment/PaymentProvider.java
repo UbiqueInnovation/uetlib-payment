@@ -1,5 +1,13 @@
 package ch.ubique.backend.payment;
 
+import ch.ubique.backend.payment.command.PaymentCancelCommand;
+import ch.ubique.backend.payment.command.PaymentCaptureCommand;
+import ch.ubique.backend.payment.command.PaymentInitCommand;
+import ch.ubique.backend.payment.result.PaymentInitResult;
+import ch.ubique.backend.payment.result.PaymentOperationResult;
+import ch.ubique.backend.payment.result.PaymentStatusResult;
+import ch.ubique.backend.payment.result.PaymentWebhookResult;
+
 import java.util.Map;
 
 /**

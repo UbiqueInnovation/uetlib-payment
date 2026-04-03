@@ -1,4 +1,8 @@
-package ch.ubique.backend.payment;
+package ch.ubique.backend.payment.result;
+
+import ch.ubique.backend.payment.PaymentFailureCode;
+import ch.ubique.backend.payment.model.PaymentFailure;
+import ch.ubique.backend.payment.model.PaymentWebhookEvent;
 
 /** Neutral result returned when parsing and validating a provider webhook. */
 public record PaymentWebhookResult(

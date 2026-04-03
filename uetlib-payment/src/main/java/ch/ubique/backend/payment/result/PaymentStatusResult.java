@@ -1,4 +1,9 @@
-package ch.ubique.backend.payment;
+package ch.ubique.backend.payment.result;
+
+import ch.ubique.backend.payment.PaymentFailureCode;
+import ch.ubique.backend.payment.PaymentMethod;
+import ch.ubique.backend.payment.TransactionStatus;
+import ch.ubique.backend.payment.model.PaymentFailure;
 
 import java.math.BigDecimal;
 

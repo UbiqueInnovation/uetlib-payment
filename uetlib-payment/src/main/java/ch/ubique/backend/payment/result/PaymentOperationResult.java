@@ -1,4 +1,7 @@
-package ch.ubique.backend.payment;
+package ch.ubique.backend.payment.result;
+
+import ch.ubique.backend.payment.PaymentFailureCode;
+import ch.ubique.backend.payment.model.PaymentFailure;
 
 /** Neutral result returned for payment operations such as capture and cancel. */
 public record PaymentOperationResult(boolean successful, PaymentFailure failure) {

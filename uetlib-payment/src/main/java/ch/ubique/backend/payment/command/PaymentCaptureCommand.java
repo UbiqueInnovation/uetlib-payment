@@ -1,4 +1,6 @@
-package ch.ubique.backend.payment;
+package ch.ubique.backend.payment.command;
+
+import ch.ubique.backend.payment.PaymentCurrency;
 
 import java.math.BigDecimal;
 

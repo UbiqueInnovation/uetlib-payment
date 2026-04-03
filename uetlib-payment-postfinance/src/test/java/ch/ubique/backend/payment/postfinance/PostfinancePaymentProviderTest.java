@@ -13,7 +13,15 @@ import ch.postfinancecheckout.sdk.model.Transaction;
 import ch.postfinancecheckout.sdk.model.TransactionCreate;
 import ch.postfinancecheckout.sdk.model.TransactionState;
 import ch.postfinancecheckout.sdk.service.TransactionsService;
-import ch.ubique.backend.payment.*;
+import ch.ubique.backend.payment.PaymentCaptureMode;
+import ch.ubique.backend.payment.PaymentCurrency;
+import ch.ubique.backend.payment.PaymentProviderType;
+import ch.ubique.backend.payment.TransactionStatus;
+import ch.ubique.backend.payment.command.PaymentInitCommand;
+import ch.ubique.backend.payment.model.PaymentBillingAddress;
+import ch.ubique.backend.payment.model.PaymentPayer;
+import ch.ubique.backend.payment.result.PaymentInitResult;
+import ch.ubique.backend.payment.result.PaymentStatusResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

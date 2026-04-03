@@ -9,7 +9,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import ch.ubique.backend.payment.*;
+import ch.ubique.backend.payment.PaymentCaptureMode;
+import ch.ubique.backend.payment.PaymentCurrency;
+import ch.ubique.backend.payment.PaymentMethod;
+import ch.ubique.backend.payment.PaymentProviderType;
+import ch.ubique.backend.payment.TransactionStatus;
+import ch.ubique.backend.payment.command.PaymentCancelCommand;
+import ch.ubique.backend.payment.command.PaymentCaptureCommand;
+import ch.ubique.backend.payment.command.PaymentInitCommand;
+import ch.ubique.backend.payment.model.PaymentPayer;
+import ch.ubique.backend.payment.result.PaymentOperationResult;
 import ch.ubique.datatrans.model.transactions.*;
 import ch.ubique.datatrans.service.DatatransTransactionClient;
 

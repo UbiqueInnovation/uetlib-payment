@@ -1,4 +1,4 @@
-package ch.ubique.backend.payment;
+package ch.ubique.backend.payment.model;
 
 /** Neutral billing address passed to a payment provider. */
 public record PaymentBillingAddress(

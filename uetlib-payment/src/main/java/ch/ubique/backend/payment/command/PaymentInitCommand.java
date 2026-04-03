@@ -1,4 +1,9 @@
-package ch.ubique.backend.payment;
+package ch.ubique.backend.payment.command;
+
+import ch.ubique.backend.payment.PaymentCaptureMode;
+import ch.ubique.backend.payment.PaymentCurrency;
+import ch.ubique.backend.payment.model.PaymentBillingAddress;
+import ch.ubique.backend.payment.model.PaymentPayer;
 
 import java.math.BigDecimal;
 

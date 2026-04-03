@@ -1,4 +1,4 @@
-package ch.ubique.backend.payment;
+package ch.ubique.backend.payment.model;
 
 /** Provider-neutral payer data passed to a payment provider. */
 public record PaymentPayer(

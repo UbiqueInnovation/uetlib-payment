@@ -1,4 +1,7 @@
-package ch.ubique.backend.payment;
+package ch.ubique.backend.payment.model;
+
+import ch.ubique.backend.payment.PaymentMethod;
+import ch.ubique.backend.payment.TransactionStatus;
 
 /** Neutral webhook event emitted by a payment provider adapter. */
 public record PaymentWebhookEvent(
