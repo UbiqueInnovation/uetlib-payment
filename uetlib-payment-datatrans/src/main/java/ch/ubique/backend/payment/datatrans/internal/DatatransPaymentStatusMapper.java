@@ -6,6 +6,7 @@ import ch.ubique.backend.payment.model.PaymentWebhookEvent;
 import ch.ubique.backend.payment.result.PaymentStatusResult;
 import ch.ubique.datatrans.model.transactions.DatatransPaymentMethod;
 import ch.ubique.datatrans.model.transactions.DatatransTransactionStatus;
+import ch.ubique.datatrans.model.transactions.DatatransTransactionStatusDetailFail;
 import ch.ubique.datatrans.model.transactions.DatatransTransactionStatusResponse;
 
 public class DatatransPaymentStatusMapper {
@@ -61,19 +62,30 @@ public class DatatransPaymentStatusMapper {
     }
 
     private String extractFailureReason(final DatatransTransactionStatusResponse response) {
-        if (response.detail().fail() == null) {
+        final var failDetail = extractFailDetail(response);
+        if (failDetail == null) {
             return null;
         }
-        return response.detail().fail().reason().name();
+        return failDetail.reason().name();
     }
 
     private String extractFailureMessage(final DatatransTransactionStatusResponse response) {
-        if (response.detail().fail() == null) {
+        final var failDetail = extractFailDetail(response);
+        if (failDetail == null || failDetail.fail() == null || failDetail.fail().isBlank()) {
             return null;
         }
-        if (response.detail().fail().fail() != null && !response.detail().fail().fail().isBlank()) {
-            return response.detail().fail().fail();
+        return failDetail.fail();
+    }
+
+    private DatatransTransactionStatusDetailFail extractFailDetail(
+            final DatatransTransactionStatusResponse response) {
+        if (response == null) {
+            return null;
         }
-        return null;
+        final var detail = response.detail();
+        if (detail == null) {
+            return null;
+        }
+        return detail.fail();
     }
 }
