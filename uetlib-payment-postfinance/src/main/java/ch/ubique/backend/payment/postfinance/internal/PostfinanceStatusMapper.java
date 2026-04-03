@@ -53,7 +53,8 @@ public class PostfinanceStatusMapper {
         if (transaction.getFailureReason() == null) {
             return null;
         }
-        final var description = getPreferredLocalizedValue(transaction.getFailureReason().getDescription());
+        final var description =
+                getPreferredLocalizedValue(transaction.getFailureReason().getDescription());
         if (isNotBlank(description)) {
             return description;
         }

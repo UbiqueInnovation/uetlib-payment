@@ -1,8 +1,8 @@
 package ch.ubique.backend.payment.postfinance.internal;
 
 import ch.ubique.backend.payment.PaymentFailureCode;
-import ch.ubique.backend.payment.result.PaymentWebhookResult;
 import ch.ubique.backend.payment.postfinance.PostfinanceWebhookPayload;
+import ch.ubique.backend.payment.result.PaymentWebhookResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

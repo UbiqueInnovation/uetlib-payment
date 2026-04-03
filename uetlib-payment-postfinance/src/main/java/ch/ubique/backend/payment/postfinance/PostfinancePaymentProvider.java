@@ -65,9 +65,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
         return new WebhookEncryptionKeysService(new ApiClient(userId, authKey));
     }
 
-    /**
-     * Factory hook kept public for future deferred-completion flows and test overrides.
-     */
+    /** Factory hook kept public for future deferred-completion flows and test overrides. */
     public TransactionCompletionsService createTransactionCompletionsService() {
         return new TransactionCompletionsService(new ApiClient(userId, authKey));
     }
@@ -84,7 +82,8 @@ public class PostfinancePaymentProvider implements PaymentProvider {
         final var transactionCreate = transactionFactory.create(command);
 
         try {
-            final Transaction created = service.postPaymentTransactions(spaceId, transactionCreate, null);
+            final Transaction created =
+                    service.postPaymentTransactions(spaceId, transactionCreate, null);
             final Long transactionId = created.getId();
             final TransactionStatus status = statusMapper.getRequiredTransactionStatus(created);
             if (transactionId == null || status == null) {
@@ -128,7 +127,8 @@ public class PostfinancePaymentProvider implements PaymentProvider {
             final var result = statusMapper.toStatusResult(transaction);
             if (!result.successful()) {
                 logger.error(
-                        "PostFinance returned a transaction without state for providerTransactionId {}",
+                        "PostFinance returned a transaction without state for providerTransactionId"
+                            + " {}",
                         providerTransactionId);
             }
             return result;
@@ -206,7 +206,8 @@ public class PostfinancePaymentProvider implements PaymentProvider {
             final PostfinanceWebhookPayload webhookPayload) {
         if (webhookPayload.state() != null && !webhookPayload.state().isBlank()) {
             try {
-                return statusMapper.mapTransactionState(TransactionState.valueOf(webhookPayload.state()));
+                return statusMapper.mapTransactionState(
+                        TransactionState.valueOf(webhookPayload.state()));
             } catch (IllegalArgumentException e) {
                 logger.info("Unknown PostFinance transaction state {}", webhookPayload.state());
             }

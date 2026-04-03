@@ -42,11 +42,12 @@ public class DatatransPaymentRequestFactory {
                 .autoSettle(command.captureMode() == PaymentCaptureMode.AUTOMATIC)
                 .language(normalizeLanguage(LocaleContextHolder.getLocale()))
                 .theme(new DatatransInitializeTransactionTheme())
-                .redirect(new DatatransInitializeTransactionRedirect(
-                        command.successUrl(),
-                        command.failedUrl(),
-                        command.failedUrl(),
-                        HttpMethod.GET.name()))
+                .redirect(
+                        new DatatransInitializeTransactionRedirect(
+                                command.successUrl(),
+                                command.failedUrl(),
+                                command.failedUrl(),
+                                HttpMethod.GET.name()))
                 .webhook(new DatatransInitializeTransactionWebhook(paymentWebhookUrl))
                 .build();
     }

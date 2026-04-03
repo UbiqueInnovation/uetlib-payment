@@ -42,7 +42,8 @@ public class PostfinanceTransactionFactory {
         return transaction;
     }
 
-    private TransactionCompletionBehavior resolveCompletionBehavior(final PaymentCaptureMode captureMode) {
+    private TransactionCompletionBehavior resolveCompletionBehavior(
+            final PaymentCaptureMode captureMode) {
         if (captureMode == PaymentCaptureMode.AUTOMATIC) {
             return TransactionCompletionBehavior.COMPLETE_IMMEDIATELY;
         }

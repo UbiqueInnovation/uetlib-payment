@@ -24,7 +24,8 @@ public class DatatransWebhookParser {
     public PaymentWebhookResult parse(final String rawPayload) {
         final DatatransTransactionStatusResponse webhookStatus;
         try {
-            webhookStatus = objectMapper.readValue(rawPayload, DatatransTransactionStatusResponse.class);
+            webhookStatus =
+                    objectMapper.readValue(rawPayload, DatatransTransactionStatusResponse.class);
         } catch (Exception e) {
             return PaymentWebhookResult.failure(
                     PaymentFailureCode.INVALID_PROVIDER_RESPONSE,

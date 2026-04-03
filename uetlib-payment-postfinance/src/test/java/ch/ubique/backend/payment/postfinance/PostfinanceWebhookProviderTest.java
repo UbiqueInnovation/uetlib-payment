@@ -13,8 +13,8 @@ import static org.mockito.Mockito.when;
 import ch.postfinancecheckout.sdk.ApiException;
 import ch.postfinancecheckout.sdk.service.WebhookEncryptionKeysService;
 import ch.ubique.backend.payment.PaymentFailureCode;
-import ch.ubique.backend.payment.result.PaymentStatusResult;
 import ch.ubique.backend.payment.TransactionStatus;
+import ch.ubique.backend.payment.result.PaymentStatusResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
