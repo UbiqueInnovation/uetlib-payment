@@ -1,7 +1,6 @@
 package ch.ubique.backend.payment.postfinance;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
@@ -11,13 +10,19 @@ import static org.mockito.Mockito.when;
 
 import ch.postfinancecheckout.sdk.ApiException;
 import ch.postfinancecheckout.sdk.model.Transaction;
+import ch.postfinancecheckout.sdk.model.TransactionCompletion;
+import ch.postfinancecheckout.sdk.model.TransactionCompletionState;
 import ch.postfinancecheckout.sdk.model.TransactionCreate;
 import ch.postfinancecheckout.sdk.model.TransactionState;
+import ch.postfinancecheckout.sdk.model.TransactionVoid;
+import ch.postfinancecheckout.sdk.model.TransactionVoidState;
 import ch.postfinancecheckout.sdk.service.TransactionsService;
 import ch.ubique.backend.payment.PaymentCaptureMode;
 import ch.ubique.backend.payment.PaymentCurrency;
 import ch.ubique.backend.payment.PaymentProviderType;
 import ch.ubique.backend.payment.TransactionStatus;
+import ch.ubique.backend.payment.command.PaymentCancelCommand;
+import ch.ubique.backend.payment.command.PaymentCaptureCommand;
 import ch.ubique.backend.payment.command.PaymentInitCommand;
 import ch.ubique.backend.payment.model.PaymentBillingAddress;
 import ch.ubique.backend.payment.model.PaymentPayer;
@@ -129,6 +134,35 @@ class PostfinancePaymentProviderTest {
     @Test
     void getType_returnsPostfinance() {
         assertEquals(PaymentProviderType.POSTFINANCE, postfinancePaymentProvider.getType());
+    }
+
+    @Test
+    void captureTransaction_success() throws ApiException {
+        final var completion = mock(TransactionCompletion.class);
+        when(completion.getState()).thenReturn(TransactionCompletionState.SUCCESSFUL);
+        when(transactionsService.postPaymentTransactionsIdCompletePartiallyOnline(
+                        anyLong(), anyLong(), any(), any()))
+                .thenReturn(completion);
+
+        final var result =
+                postfinancePaymentProvider.capture(
+                        new PaymentCaptureCommand(
+                                "1", "capture-ref", new BigDecimal("100.00"), PaymentCurrency.CHF));
+
+        assertTrue(result.successful());
+    }
+
+    @Test
+    void cancelTransaction_success() throws ApiException {
+        final var transactionVoid = mock(TransactionVoid.class);
+        when(transactionVoid.getState()).thenReturn(TransactionVoidState.SUCCESSFUL);
+        when(transactionsService.postPaymentTransactionsIdVoidOnline(anyLong(), anyLong(), any()))
+                .thenReturn(transactionVoid);
+
+        final var result =
+                postfinancePaymentProvider.cancel(new PaymentCancelCommand("1", "cancel-ref"));
+
+        assertTrue(result.successful());
     }
 
     @Test

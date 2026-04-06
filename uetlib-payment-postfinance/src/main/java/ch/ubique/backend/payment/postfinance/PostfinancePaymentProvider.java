@@ -3,20 +3,25 @@ package ch.ubique.backend.payment.postfinance;
 import ch.postfinancecheckout.sdk.ApiClient;
 import ch.postfinancecheckout.sdk.ApiException;
 import ch.postfinancecheckout.sdk.model.Transaction;
+import ch.postfinancecheckout.sdk.model.TransactionCompletion;
 import ch.postfinancecheckout.sdk.model.TransactionState;
-import ch.postfinancecheckout.sdk.service.TransactionCompletionsService;
+import ch.postfinancecheckout.sdk.model.TransactionVoid;
 import ch.postfinancecheckout.sdk.service.TransactionsService;
 import ch.postfinancecheckout.sdk.service.WebhookEncryptionKeysService;
 import ch.ubique.backend.payment.PaymentFailureCode;
 import ch.ubique.backend.payment.PaymentProvider;
 import ch.ubique.backend.payment.PaymentProviderType;
 import ch.ubique.backend.payment.TransactionStatus;
+import ch.ubique.backend.payment.command.PaymentCancelCommand;
+import ch.ubique.backend.payment.command.PaymentCaptureCommand;
 import ch.ubique.backend.payment.command.PaymentInitCommand;
 import ch.ubique.backend.payment.postfinance.internal.PostfinanceAuthKeyValidator;
+import ch.ubique.backend.payment.postfinance.internal.PostfinanceOperationsClient;
 import ch.ubique.backend.payment.postfinance.internal.PostfinanceStatusMapper;
 import ch.ubique.backend.payment.postfinance.internal.PostfinanceTransactionFactory;
 import ch.ubique.backend.payment.postfinance.internal.PostfinanceWebhookParser;
 import ch.ubique.backend.payment.result.PaymentInitResult;
+import ch.ubique.backend.payment.result.PaymentOperationResult;
 import ch.ubique.backend.payment.result.PaymentStatusResult;
 import ch.ubique.backend.payment.result.PaymentWebhookResult;
 
@@ -35,6 +40,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
     private final long userId;
     private final String authKey;
     private final boolean signatureValidationEnabled;
+    private final PostfinanceOperationsClient operationsClient;
     private final PostfinanceTransactionFactory transactionFactory;
     private final PostfinanceStatusMapper statusMapper;
     private final PostfinanceWebhookParser webhookParser;
@@ -52,6 +58,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
         this.userId = userId;
         this.authKey = authKey;
         this.signatureValidationEnabled = signatureValidationEnabled;
+        this.operationsClient = new PostfinanceOperationsClient(spaceId, productUniqueId);
         this.transactionFactory = new PostfinanceTransactionFactory(productSku, productUniqueId);
         this.statusMapper = new PostfinanceStatusMapper();
         this.webhookParser = new PostfinanceWebhookParser(objectMapper, spaceId);
@@ -63,11 +70,6 @@ public class PostfinancePaymentProvider implements PaymentProvider {
 
     public WebhookEncryptionKeysService createWebhookEncryptionKeysService() {
         return new WebhookEncryptionKeysService(new ApiClient(userId, authKey));
-    }
-
-    /** Factory hook kept public for future deferred-completion flows and test overrides. */
-    public TransactionCompletionsService createTransactionCompletionsService() {
-        return new TransactionCompletionsService(new ApiClient(userId, authKey));
     }
 
     @Override
@@ -148,6 +150,74 @@ public class PostfinancePaymentProvider implements PaymentProvider {
             return PaymentStatusResult.failure(
                     PaymentFailureCode.INVALID_PROVIDER_REFERENCE,
                     "Invalid PostFinance transaction id");
+        }
+    }
+
+    @Override
+    public PaymentOperationResult capture(final PaymentCaptureCommand command) {
+        final Long transactionId =
+                operationsClient.parseProviderTransactionId(command.providerTransactionId());
+        if (transactionId == null) {
+            return PaymentOperationResult.failure(
+                    PaymentFailureCode.INVALID_PROVIDER_REFERENCE,
+                    "Invalid PostFinance transaction id");
+        }
+
+        try {
+            final TransactionCompletion completion =
+                    operationsClient.capture(createTransactionsService(), transactionId, command);
+            if (!statusMapper.isCaptureSuccessful(completion)) {
+                logger.error(
+                        "PostFinance capture failed for providerTransactionId {} with state {}",
+                        command.providerTransactionId(),
+                        completion == null ? null : completion.getState());
+                return PaymentOperationResult.failure(
+                        PaymentFailureCode.INVALID_PROVIDER_RESPONSE,
+                        "Failed to capture PostFinance transaction");
+            }
+            return PaymentOperationResult.success();
+        } catch (ApiException e) {
+            logger.error(
+                    "Failed to capture PostFinance transaction for providerTransactionId {}",
+                    command.providerTransactionId(),
+                    e);
+            return PaymentOperationResult.failure(
+                    PaymentFailureCode.PROVIDER_API_ERROR,
+                    "Failed to capture PostFinance transaction");
+        }
+    }
+
+    @Override
+    public PaymentOperationResult cancel(final PaymentCancelCommand command) {
+        final Long transactionId =
+                operationsClient.parseProviderTransactionId(command.providerTransactionId());
+        if (transactionId == null) {
+            return PaymentOperationResult.failure(
+                    PaymentFailureCode.INVALID_PROVIDER_REFERENCE,
+                    "Invalid PostFinance transaction id");
+        }
+
+        try {
+            final TransactionVoid transactionVoid =
+                    operationsClient.cancel(createTransactionsService(), transactionId);
+            if (!statusMapper.isCancelSuccessful(transactionVoid)) {
+                logger.error(
+                        "PostFinance cancel failed for providerTransactionId {} with state {}",
+                        command.providerTransactionId(),
+                        transactionVoid == null ? null : transactionVoid.getState());
+                return PaymentOperationResult.failure(
+                        PaymentFailureCode.INVALID_PROVIDER_RESPONSE,
+                        "Failed to cancel PostFinance transaction");
+            }
+            return PaymentOperationResult.success();
+        } catch (ApiException e) {
+            logger.error(
+                    "Failed to cancel PostFinance transaction for providerTransactionId {}",
+                    command.providerTransactionId(),
+                    e);
+            return PaymentOperationResult.failure(
+                    PaymentFailureCode.PROVIDER_API_ERROR,
+                    "Failed to cancel PostFinance transaction");
         }
     }
 

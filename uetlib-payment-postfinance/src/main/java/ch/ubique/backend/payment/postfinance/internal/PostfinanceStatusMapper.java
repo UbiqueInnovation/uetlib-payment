@@ -1,7 +1,11 @@
 package ch.ubique.backend.payment.postfinance.internal;
 
 import ch.postfinancecheckout.sdk.model.Transaction;
+import ch.postfinancecheckout.sdk.model.TransactionCompletion;
+import ch.postfinancecheckout.sdk.model.TransactionCompletionState;
 import ch.postfinancecheckout.sdk.model.TransactionState;
+import ch.postfinancecheckout.sdk.model.TransactionVoid;
+import ch.postfinancecheckout.sdk.model.TransactionVoidState;
 import ch.ubique.backend.payment.PaymentFailureCode;
 import ch.ubique.backend.payment.PaymentMethod;
 import ch.ubique.backend.payment.TransactionStatus;
@@ -34,6 +38,23 @@ public class PostfinanceStatusMapper {
                 PaymentMethod.UNKNOWN,
                 failureReason,
                 failureReason);
+    }
+
+    public boolean isCaptureSuccessful(final TransactionCompletion completion) {
+        if (completion == null || completion.getState() == null) {
+            return false;
+        }
+        return completion.getState() == TransactionCompletionState.SUCCESSFUL
+                || completion.getState() == TransactionCompletionState.PENDING
+                || completion.getState() == TransactionCompletionState.SCHEDULED;
+    }
+
+    public boolean isCancelSuccessful(final TransactionVoid transactionVoid) {
+        if (transactionVoid == null || transactionVoid.getState() == null) {
+            return false;
+        }
+        return transactionVoid.getState() == TransactionVoidState.SUCCESSFUL
+                || transactionVoid.getState() == TransactionVoidState.PENDING;
     }
 
     public TransactionStatus mapTransactionState(final TransactionState state) {
