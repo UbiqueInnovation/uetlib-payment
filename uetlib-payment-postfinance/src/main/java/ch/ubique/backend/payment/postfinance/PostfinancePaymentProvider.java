@@ -12,6 +12,7 @@ import ch.ubique.backend.payment.PaymentProvider;
 import ch.ubique.backend.payment.PaymentProviderType;
 import ch.ubique.backend.payment.TransactionStatus;
 import ch.ubique.backend.payment.command.PaymentInitCommand;
+import ch.ubique.backend.payment.postfinance.internal.PostfinanceAuthKeyValidator;
 import ch.ubique.backend.payment.postfinance.internal.PostfinanceStatusMapper;
 import ch.ubique.backend.payment.postfinance.internal.PostfinanceTransactionFactory;
 import ch.ubique.backend.payment.postfinance.internal.PostfinanceWebhookParser;
@@ -29,8 +30,6 @@ import java.util.Map;
 public class PostfinancePaymentProvider implements PaymentProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(PostfinancePaymentProvider.class);
-    private static final String UNKNOWN_TRANSACTION_STATE_MESSAGE =
-            "PostFinance transaction is missing a state";
 
     private final long spaceId;
     private final long userId;
@@ -48,6 +47,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
             final String productSku,
             final String productUniqueId,
             final boolean signatureValidationEnabled) {
+        PostfinanceAuthKeyValidator.validate(authKey);
         this.spaceId = spaceId;
         this.userId = userId;
         this.authKey = authKey;
@@ -128,7 +128,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
             if (!result.successful()) {
                 logger.error(
                         "PostFinance returned a transaction without state for providerTransactionId"
-                            + " {}",
+                                + " {}",
                         providerTransactionId);
             }
             return result;

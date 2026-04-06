@@ -1,6 +1,7 @@
 package ch.ubique.backend.payment.postfinance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
@@ -128,5 +129,45 @@ class PostfinancePaymentProviderTest {
     @Test
     void getType_returnsPostfinance() {
         assertEquals(PaymentProviderType.POSTFINANCE, postfinancePaymentProvider.getType());
+    }
+
+    @Test
+    void constructor_rejectsWeakAuthKey() {
+        IllegalStateException exception =
+                assertThrows(
+                        IllegalStateException.class,
+                        () ->
+                                new PostfinancePaymentProvider(
+                                        new ObjectMapper(),
+                                        testSpaceId,
+                                        1L,
+                                        "VE9ETw==",
+                                        TEST_PRODUCT_SKU,
+                                        TEST_PRODUCT_UNIQUE_ID,
+                                        false));
+
+        assertEquals(
+                "Invalid configuration for property payment.postfinance.auth-key. Expected a Base64-encoded key with at least 256 bits for HS256 signing.",
+                exception.getMessage());
+    }
+
+    @Test
+    void constructor_rejectsMalformedBase64AuthKey() {
+        IllegalStateException exception =
+                assertThrows(
+                        IllegalStateException.class,
+                        () ->
+                                new PostfinancePaymentProvider(
+                                        new ObjectMapper(),
+                                        testSpaceId,
+                                        1L,
+                                        "not-base64!!!",
+                                        TEST_PRODUCT_SKU,
+                                        TEST_PRODUCT_UNIQUE_ID,
+                                        false));
+
+        assertEquals(
+                "Invalid configuration for property payment.postfinance.auth-key. Expected a Base64-encoded key with at least 256 bits for HS256 signing.",
+                exception.getMessage());
     }
 }
