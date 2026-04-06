@@ -1,0 +1,138 @@
+package ch.ubique.backend.payment.postfinance.internal;
+
+import ch.postfinancecheckout.sdk.model.AddressCreate;
+import ch.postfinancecheckout.sdk.model.LineItemCreate;
+import ch.postfinancecheckout.sdk.model.LineItemType;
+import ch.postfinancecheckout.sdk.model.TransactionCompletionBehavior;
+import ch.postfinancecheckout.sdk.model.TransactionCreate;
+import ch.ubique.backend.payment.PaymentCaptureMode;
+import ch.ubique.backend.payment.command.PaymentInitCommand;
+import ch.ubique.backend.payment.model.PaymentBillingAddress;
+import ch.ubique.backend.payment.model.PaymentPayer;
+
+public class PostfinanceTransactionFactory {
+
+    private final String productSku;
+    private final String productUniqueId;
+
+    public PostfinanceTransactionFactory(final String productSku, final String productUniqueId) {
+        this.productSku = productSku;
+        this.productUniqueId = productUniqueId;
+    }
+
+    public TransactionCreate create(final PaymentInitCommand command) {
+        final var transaction = new TransactionCreate();
+        transaction.setCurrency(command.currency().name());
+        transaction.setMerchantReference(command.reference());
+        transaction.setCompletionBehavior(resolveCompletionBehavior(command.captureMode()));
+        if (command.successUrl() != null) {
+            transaction.setSuccessUrl(command.successUrl());
+        }
+        if (command.failedUrl() != null) {
+            transaction.setFailedUrl(command.failedUrl());
+        }
+        if (command.payer() != null && isNotBlank(command.payer().email())) {
+            transaction.setCustomerEmailAddress(command.payer().email());
+        }
+        final var billingAddress = buildBillingAddress(command.payer(), command.billingAddress());
+        if (billingAddress != null) {
+            transaction.setBillingAddress(billingAddress);
+        }
+        transaction.setLineItems(java.util.List.of(createLineItem(command)));
+        return transaction;
+    }
+
+    private TransactionCompletionBehavior resolveCompletionBehavior(
+            final PaymentCaptureMode captureMode) {
+        if (captureMode == PaymentCaptureMode.AUTOMATIC) {
+            return TransactionCompletionBehavior.COMPLETE_IMMEDIATELY;
+        }
+        return TransactionCompletionBehavior.COMPLETE_DEFERRED;
+    }
+
+    private LineItemCreate createLineItem(final PaymentInitCommand command) {
+        final var lineItem = new LineItemCreate();
+        lineItem.setName(command.description());
+        lineItem.setAmountIncludingTax(command.amount());
+        lineItem.setQuantity(java.math.BigDecimal.ONE);
+        lineItem.setType(LineItemType.PRODUCT);
+        if (isNotBlank(productUniqueId)) {
+            lineItem.setUniqueId(productUniqueId);
+        }
+        if (isNotBlank(productSku)) {
+            lineItem.setSku(productSku);
+        }
+        return lineItem;
+    }
+
+    private AddressCreate buildBillingAddress(
+            final PaymentPayer payer, final PaymentBillingAddress billingAddressInput) {
+        if (!hasPayerName(payer) && !hasBillingAddressData(billingAddressInput)) {
+            return null;
+        }
+        final var billingAddress = new AddressCreate();
+        applyPayerName(billingAddress, payer);
+        applyBillingAddress(billingAddress, billingAddressInput);
+        return billingAddress;
+    }
+
+    private boolean hasPayerName(final PaymentPayer payer) {
+        return payer != null && (isNotBlank(payer.givenName()) || isNotBlank(payer.familyName()));
+    }
+
+    private void applyPayerName(final AddressCreate billingAddress, final PaymentPayer payer) {
+        if (payer == null) {
+            return;
+        }
+        setIfNotBlank(billingAddress::setGivenName, payer.givenName());
+        setIfNotBlank(billingAddress::setFamilyName, payer.familyName());
+    }
+
+    private boolean hasBillingAddressData(final PaymentBillingAddress address) {
+        if (address == null) {
+            return false;
+        }
+        return isNotBlank(address.street())
+                || isNotBlank(address.houseNumber())
+                || isNotBlank(address.addendum())
+                || isNotBlank(address.city())
+                || isNotBlank(address.zip())
+                || isNotBlank(address.countryCode());
+    }
+
+    private void applyBillingAddress(
+            final AddressCreate billingAddress, final PaymentBillingAddress address) {
+        if (address == null) {
+            return;
+        }
+        setIfNotBlank(billingAddress::setStreet, formatStreet(address));
+        setIfNotBlank(billingAddress::setPostcode, address.zip());
+        setIfNotBlank(billingAddress::setCity, address.city());
+        setIfNotBlank(billingAddress::setCountry, address.countryCode());
+        setIfNotBlank(billingAddress::setDependentLocality, address.addendum());
+    }
+
+    private String formatStreet(final PaymentBillingAddress address) {
+        if (isNotBlank(address.street()) && isNotBlank(address.houseNumber())) {
+            return address.street() + " " + address.houseNumber();
+        }
+        if (isNotBlank(address.street())) {
+            return address.street();
+        }
+        if (isNotBlank(address.houseNumber())) {
+            return address.houseNumber();
+        }
+        return null;
+    }
+
+    private void setIfNotBlank(
+            final java.util.function.Consumer<String> setter, final String value) {
+        if (isNotBlank(value)) {
+            setter.accept(value);
+        }
+    }
+
+    private boolean isNotBlank(final String value) {
+        return value != null && !value.trim().isEmpty();
+    }
+}
