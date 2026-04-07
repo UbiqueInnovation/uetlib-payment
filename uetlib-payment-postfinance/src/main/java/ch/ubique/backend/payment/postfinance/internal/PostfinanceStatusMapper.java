@@ -11,6 +11,8 @@ import ch.ubique.backend.payment.PaymentMethod;
 import ch.ubique.backend.payment.TransactionStatus;
 import ch.ubique.backend.payment.result.PaymentStatusResult;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Map;
 
 public class PostfinanceStatusMapper {
@@ -32,7 +34,7 @@ public class PostfinanceStatusMapper {
         final var failureReason = extractFailureReason(transaction);
         return PaymentStatusResult.success(
                 status,
-                transaction.getState() == null ? null : transaction.getState().name(),
+                transaction.getState().name(),
                 transaction.getCurrency(),
                 transaction.getAuthorizationAmount(),
                 PaymentMethod.UNKNOWN,
@@ -76,7 +78,7 @@ public class PostfinanceStatusMapper {
         }
         final var description =
                 getPreferredLocalizedValue(transaction.getFailureReason().getDescription());
-        if (isNotBlank(description)) {
+        if (StringUtils.isNotBlank(description)) {
             return description;
         }
         return getPreferredLocalizedValue(transaction.getFailureReason().getName());
@@ -87,13 +89,9 @@ public class PostfinanceStatusMapper {
             return null;
         }
         final var english = values.get("en-US");
-        if (isNotBlank(english)) {
+        if (StringUtils.isNotBlank(english)) {
             return english;
         }
-        return values.values().stream().filter(this::isNotBlank).findFirst().orElse(null);
-    }
-
-    private boolean isNotBlank(final String value) {
-        return value != null && !value.trim().isEmpty();
+        return values.values().stream().filter(StringUtils::isNotBlank).findFirst().orElse(null);
     }
 }

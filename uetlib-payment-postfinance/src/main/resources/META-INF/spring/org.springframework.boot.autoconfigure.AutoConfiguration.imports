@@ -1,1 +1,1 @@
-ch.ubique.backend.payment.postfinance.PostfinancePaymentProviderConfiguration
+ch.ubique.backend.payment.postfinance.PostfinancePaymentProviderAutoConfiguration

@@ -129,7 +129,29 @@ class DatatransPaymentProviderTest {
         assertEquals(TransactionStatus.AUTHORIZED, result.paymentStatus());
         assertEquals("AUTHORIZED", result.rawProviderStatus());
         assertEquals("CHF", result.currency());
-        assertEquals(PaymentMethod.CARD, result.paymentMethod());
+        assertEquals(PaymentMethod.VISA, result.paymentMethod());
+    }
+
+    @Test
+    void getStatus_mapsGooglePayCorrectly() {
+        when(datatransTransactionClient.getTransactionStatus("trx-1"))
+                .thenReturn(
+                        new DatatransTransactionStatusResponse(
+                                "trx-1",
+                                "merchant",
+                                DatatransTransactionType.PAYMENT,
+                                DatatransTransactionStatus.AUTHORIZED,
+                                DatatransCurrency.CHF,
+                                "ref-1",
+                                null,
+                                DatatransPaymentMethod.PAY,
+                                null,
+                                null));
+
+        final var result = provider.getStatus("trx-1");
+
+        assertTrue(result.successful());
+        assertEquals(PaymentMethod.GOOGLE_PAY, result.paymentMethod());
     }
 
     @Test

@@ -6,28 +6,31 @@ import ch.ubique.backend.payment.model.PaymentFailure;
 
 import java.math.BigDecimal;
 
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 /** Provider-neutral response returned after successful payment initialization. */
 public record PaymentInitResult(
         boolean successful,
-        String providerTransactionId,
-        String javascriptUrl,
-        String paymentPageUrl,
-        String providerReference,
-        TransactionStatus status,
-        String currency,
-        BigDecimal authorizationAmount,
-        Integer version,
-        PaymentFailure failure) {
+        @Nullable String providerTransactionId,
+        @Nullable String javascriptUrl,
+        @Nullable String paymentPageUrl,
+        @Nullable String providerReference,
+        @Nullable TransactionStatus status,
+        @Nullable String currency,
+        @Nullable BigDecimal authorizationAmount,
+        @Nullable Integer version,
+        @Nullable PaymentFailure failure) {
 
     public static PaymentInitResult success(
-            String providerTransactionId,
-            String javascriptUrl,
-            String paymentPageUrl,
-            String providerReference,
-            TransactionStatus status,
-            String currency,
-            BigDecimal authorizationAmount,
-            Integer version) {
+            @NonNull String providerTransactionId,
+            @Nullable String javascriptUrl,
+            @Nullable String paymentPageUrl,
+            @NonNull String providerReference,
+            @NonNull TransactionStatus status,
+            @Nullable String currency,
+            @Nullable BigDecimal authorizationAmount,
+            @Nullable Integer version) {
         return new PaymentInitResult(
                 true,
                 providerTransactionId,
@@ -41,7 +44,8 @@ public record PaymentInitResult(
                 null);
     }
 
-    public static PaymentInitResult failure(PaymentFailureCode code, String message) {
+    public static PaymentInitResult failure(
+            @NonNull PaymentFailureCode code, @NonNull String message) {
         return new PaymentInitResult(
                 false, null, null, null, null, null, null, null, null, new PaymentFailure(code, message));
     }

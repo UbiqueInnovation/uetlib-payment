@@ -10,6 +10,8 @@ import ch.ubique.backend.payment.command.PaymentInitCommand;
 import ch.ubique.backend.payment.model.PaymentBillingAddress;
 import ch.ubique.backend.payment.model.PaymentPayer;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class PostfinanceTransactionFactory {
 
     private final String productSku;
@@ -22,6 +24,7 @@ public class PostfinanceTransactionFactory {
 
     public TransactionCreate create(final PaymentInitCommand command) {
         final var transaction = new TransactionCreate();
+        final var payer = command.payer();
         transaction.setCurrency(command.currency().name());
         transaction.setMerchantReference(command.reference());
         transaction.setCompletionBehavior(resolveCompletionBehavior(command.captureMode()));
@@ -31,10 +34,10 @@ public class PostfinanceTransactionFactory {
         if (command.failedUrl() != null) {
             transaction.setFailedUrl(command.failedUrl());
         }
-        if (command.payer() != null && isNotBlank(command.payer().email())) {
-            transaction.setCustomerEmailAddress(command.payer().email());
+        if (payer != null && StringUtils.isNotBlank(payer.email())) {
+            transaction.setCustomerEmailAddress(payer.email());
         }
-        final var billingAddress = buildBillingAddress(command.payer(), command.billingAddress());
+        final var billingAddress = buildBillingAddress(payer, command.billingAddress());
         if (billingAddress != null) {
             transaction.setBillingAddress(billingAddress);
         }
@@ -56,10 +59,10 @@ public class PostfinanceTransactionFactory {
         lineItem.setAmountIncludingTax(command.amount());
         lineItem.setQuantity(java.math.BigDecimal.ONE);
         lineItem.setType(LineItemType.PRODUCT);
-        if (isNotBlank(productUniqueId)) {
+        if (StringUtils.isNotBlank(productUniqueId)) {
             lineItem.setUniqueId(productUniqueId);
         }
-        if (isNotBlank(productSku)) {
+        if (StringUtils.isNotBlank(productSku)) {
             lineItem.setSku(productSku);
         }
         return lineItem;
@@ -77,7 +80,9 @@ public class PostfinanceTransactionFactory {
     }
 
     private boolean hasPayerName(final PaymentPayer payer) {
-        return payer != null && (isNotBlank(payer.givenName()) || isNotBlank(payer.familyName()));
+        return payer != null
+                && (StringUtils.isNotBlank(payer.givenName())
+                        || StringUtils.isNotBlank(payer.familyName()));
     }
 
     private void applyPayerName(final AddressCreate billingAddress, final PaymentPayer payer) {
@@ -92,12 +97,12 @@ public class PostfinanceTransactionFactory {
         if (address == null) {
             return false;
         }
-        return isNotBlank(address.street())
-                || isNotBlank(address.houseNumber())
-                || isNotBlank(address.addendum())
-                || isNotBlank(address.city())
-                || isNotBlank(address.zip())
-                || isNotBlank(address.countryCode());
+        return StringUtils.isNotBlank(address.street())
+                || StringUtils.isNotBlank(address.houseNumber())
+                || StringUtils.isNotBlank(address.addendum())
+                || StringUtils.isNotBlank(address.city())
+                || StringUtils.isNotBlank(address.zip())
+                || StringUtils.isNotBlank(address.countryCode());
     }
 
     private void applyBillingAddress(
@@ -113,13 +118,14 @@ public class PostfinanceTransactionFactory {
     }
 
     private String formatStreet(final PaymentBillingAddress address) {
-        if (isNotBlank(address.street()) && isNotBlank(address.houseNumber())) {
+        if (StringUtils.isNotBlank(address.street())
+                && StringUtils.isNotBlank(address.houseNumber())) {
             return address.street() + " " + address.houseNumber();
         }
-        if (isNotBlank(address.street())) {
+        if (StringUtils.isNotBlank(address.street())) {
             return address.street();
         }
-        if (isNotBlank(address.houseNumber())) {
+        if (StringUtils.isNotBlank(address.houseNumber())) {
             return address.houseNumber();
         }
         return null;
@@ -127,12 +133,8 @@ public class PostfinanceTransactionFactory {
 
     private void setIfNotBlank(
             final java.util.function.Consumer<String> setter, final String value) {
-        if (isNotBlank(value)) {
+        if (StringUtils.isNotBlank(value)) {
             setter.accept(value);
         }
-    }
-
-    private boolean isNotBlank(final String value) {
-        return value != null && !value.trim().isEmpty();
     }
 }

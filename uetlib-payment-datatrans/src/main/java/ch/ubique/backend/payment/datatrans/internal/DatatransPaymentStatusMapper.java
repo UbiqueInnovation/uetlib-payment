@@ -51,10 +51,12 @@ public class DatatransPaymentStatusMapper {
             return null;
         }
         return switch (paymentMethod) {
-            case ECA, VIS -> PaymentMethod.CARD;
+            case ECA -> PaymentMethod.MASTERCARD;
+            case VIS -> PaymentMethod.VISA;
             case TWI -> PaymentMethod.TWINT;
             case APL -> PaymentMethod.APPLE_PAY;
-            case PAY -> PaymentMethod.PAYPAL;
+            case PAY -> PaymentMethod.GOOGLE_PAY;
+            case PAP -> PaymentMethod.PAYPAL;
             case PFC -> PaymentMethod.POSTFINANCE_CARD;
             case PEF -> PaymentMethod.POSTFINANCE_EFINANCE;
             default -> PaymentMethod.UNKNOWN;

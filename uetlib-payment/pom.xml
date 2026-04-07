@@ -16,4 +16,12 @@
     <properties>
         <artifact-package-name>ch.ubique.backend.payment</artifact-package-name>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
 </project>

@@ -184,7 +184,7 @@ class PostfinancePaymentProviderTest {
                                         false));
 
         assertEquals(
-                "Invalid configuration for property payment.postfinance.auth-key. Expected a Base64-encoded key with at least 256 bits for HS256 signing.",
+                "Invalid configuration for property ch.ubique.backend.payment.postfinance.auth-key. Expected a Base64-encoded key with at least 256 bits for HS256 signing.",
                 exception.getMessage());
     }
 
@@ -204,7 +204,7 @@ class PostfinancePaymentProviderTest {
                                         false));
 
         assertEquals(
-                "Invalid configuration for property payment.postfinance.auth-key. Expected a Base64-encoded key with at least 256 bits for HS256 signing.",
+                "Invalid configuration for property ch.ubique.backend.payment.postfinance.auth-key. Expected a Base64-encoded key with at least 256 bits for HS256 signing.",
                 exception.getMessage());
     }
 }

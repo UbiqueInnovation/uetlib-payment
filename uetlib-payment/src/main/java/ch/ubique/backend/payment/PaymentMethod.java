@@ -2,7 +2,8 @@ package ch.ubique.backend.payment;
 
 /** Neutral payment method categories exposed by payment providers. */
 public enum PaymentMethod {
-    CARD,
+    MASTERCARD,
+    VISA,
     TWINT,
     APPLE_PAY,
     GOOGLE_PAY,
