@@ -11,6 +11,7 @@ public record PaymentInitResult(
         boolean successful,
         String providerTransactionId,
         String javascriptUrl,
+        String paymentPageUrl,
         String providerReference,
         TransactionStatus status,
         String currency,
@@ -21,6 +22,7 @@ public record PaymentInitResult(
     public static PaymentInitResult success(
             String providerTransactionId,
             String javascriptUrl,
+            String paymentPageUrl,
             String providerReference,
             TransactionStatus status,
             String currency,
@@ -30,6 +32,7 @@ public record PaymentInitResult(
                 true,
                 providerTransactionId,
                 javascriptUrl,
+                paymentPageUrl,
                 providerReference,
                 status,
                 currency,
@@ -40,6 +43,6 @@ public record PaymentInitResult(
 
     public static PaymentInitResult failure(PaymentFailureCode code, String message) {
         return new PaymentInitResult(
-                false, null, null, null, null, null, null, null, new PaymentFailure(code, message));
+                false, null, null, null, null, null, null, null, null, new PaymentFailure(code, message));
     }
 }

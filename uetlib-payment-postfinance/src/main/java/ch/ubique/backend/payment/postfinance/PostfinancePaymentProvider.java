@@ -99,10 +99,13 @@ public class PostfinancePaymentProvider implements PaymentProvider {
 
             final String jsUrl =
                     service.getPaymentTransactionsIdLightboxJavascriptUrl(transactionId, spaceId);
+            final String paymentPageUrl =
+                    service.getPaymentTransactionsIdPaymentPageUrl(transactionId, spaceId);
 
             return PaymentInitResult.success(
                     transactionId.toString(),
                     jsUrl,
+                    paymentPageUrl,
                     merchantReference,
                     status,
                     created.getCurrency(),

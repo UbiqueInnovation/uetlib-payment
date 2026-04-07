@@ -66,6 +66,7 @@ public class DatatransPaymentProvider implements PaymentProvider {
             return PaymentInitResult.success(
                     response.transactionId(),
                     response.redirectUrl(),
+                    null,
                     command.reference(),
                     TransactionStatus.PENDING,
                     request.currency().name(),

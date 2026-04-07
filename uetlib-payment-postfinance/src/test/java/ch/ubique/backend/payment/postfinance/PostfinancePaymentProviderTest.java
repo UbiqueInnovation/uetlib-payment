@@ -93,12 +93,15 @@ class PostfinancePaymentProviderTest {
         when(transactionsService.getPaymentTransactionsIdLightboxJavascriptUrl(
                         anyLong(), anyLong()))
                 .thenReturn("http://js.url");
+        when(transactionsService.getPaymentTransactionsIdPaymentPageUrl(anyLong(), anyLong()))
+                .thenReturn("http://page.url");
 
         PaymentInitResult response = postfinancePaymentProvider.initiate(command);
 
         assertEquals(true, response.successful());
         assertEquals("1", response.providerTransactionId());
         assertEquals("http://js.url", response.javascriptUrl());
+        assertEquals("http://page.url", response.paymentPageUrl());
         assertEquals("REG-11111111", response.providerReference());
         assertEquals(TransactionStatus.AUTHORIZED, response.status());
         TransactionCreate sent = transactionCaptor.getValue();

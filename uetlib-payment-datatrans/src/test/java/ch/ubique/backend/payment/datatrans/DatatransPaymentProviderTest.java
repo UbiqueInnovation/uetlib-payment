@@ -95,6 +95,7 @@ class DatatransPaymentProviderTest {
         assertTrue(result.successful());
         assertEquals("trx-1", result.providerTransactionId());
         assertEquals("https://redirect", result.javascriptUrl());
+        assertEquals(null, result.paymentPageUrl());
         assertEquals(PaymentProviderType.DATATRANS, provider.getType());
 
         final ArgumentCaptor<DatatransInitializeTransaction> captor =
