@@ -1,7 +1,7 @@
 package ch.ubique.backend.payment.command;
 
-import org.jspecify.annotations.NonNull;
+import jakarta.validation.constraints.NotBlank;
 
 /** Neutral command for canceling or voiding a provider-side payment transaction. */
 public record PaymentCancelCommand(
-        @NonNull String providerTransactionId, @NonNull String providerReference) {}
+        @NotBlank String providerTransactionId, @NotBlank String providerReference) {}

@@ -4,11 +4,13 @@ import ch.ubique.backend.payment.PaymentCurrency;
 
 import java.math.BigDecimal;
 
-import org.jspecify.annotations.NonNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 /** Neutral command for capturing or settling a previously authorized payment. */
 public record PaymentCaptureCommand(
-        @NonNull String providerTransactionId,
-        @NonNull String providerReference,
-        @NonNull BigDecimal amount,
-        @NonNull PaymentCurrency currency) {}
+        @NotBlank String providerTransactionId,
+        @NotBlank String providerReference,
+        @NotNull @Positive BigDecimal amount,
+        @NotNull PaymentCurrency currency) {}

@@ -2,7 +2,8 @@ package ch.ubique.backend.payment.model;
 
 import ch.ubique.backend.payment.PaymentFailureCode;
 
-import org.jspecify.annotations.NonNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /** Neutral payment-provider error information. */
-public record PaymentFailure(@NonNull PaymentFailureCode code, @NonNull String message) {}
+public record PaymentFailure(@NotNull PaymentFailureCode code, @NotBlank String message) {}

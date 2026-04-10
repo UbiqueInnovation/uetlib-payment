@@ -7,29 +7,29 @@ import ch.ubique.backend.payment.model.PaymentFailure;
 
 import java.math.BigDecimal;
 
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /** Neutral result returned when fetching a payment status from a provider. */
 public record PaymentStatusResult(
         boolean successful,
-        @Nullable TransactionStatus paymentStatus,
-        @Nullable String rawProviderStatus,
-        @Nullable String currency,
-        @Nullable BigDecimal authorizationAmount,
-        @Nullable PaymentMethod paymentMethod,
-        @Nullable String failureReason,
-        @Nullable String failureMessage,
-        @Nullable PaymentFailure failure) {
+        TransactionStatus paymentStatus,
+        String rawProviderStatus,
+        String currency,
+        BigDecimal authorizationAmount,
+        PaymentMethod paymentMethod,
+        String failureReason,
+        String failureMessage,
+        PaymentFailure failure) {
 
     public static PaymentStatusResult success(
-            @NonNull TransactionStatus paymentStatus,
-            @Nullable String rawProviderStatus,
-            @Nullable String currency,
-            @Nullable BigDecimal authorizationAmount,
-            @NonNull PaymentMethod paymentMethod,
-            @Nullable String failureReason,
-            @Nullable String failureMessage) {
+            @NotNull TransactionStatus paymentStatus,
+            String rawProviderStatus,
+            String currency,
+            BigDecimal authorizationAmount,
+            @NotNull PaymentMethod paymentMethod,
+            String failureReason,
+            String failureMessage) {
         return new PaymentStatusResult(
                 true,
                 paymentStatus,
@@ -43,7 +43,7 @@ public record PaymentStatusResult(
     }
 
     public static PaymentStatusResult failure(
-            @NonNull PaymentFailureCode code, @NonNull String message) {
+            @NotNull PaymentFailureCode code, @NotBlank String message) {
         return new PaymentStatusResult(
                 false, null, null, null, null, null, null, null, new PaymentFailure(code, message));
     }

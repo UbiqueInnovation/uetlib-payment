@@ -7,17 +7,19 @@ import ch.ubique.backend.payment.model.PaymentPayer;
 
 import java.math.BigDecimal;
 
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 /** Provider-neutral command used to initiate a payment transaction. */
 public record PaymentInitCommand(
-        @NonNull BigDecimal amount,
-        @NonNull PaymentCurrency currency,
-        @NonNull String reference,
-        @NonNull String description,
-        @Nullable String successUrl,
-        @Nullable String failedUrl,
-        @NonNull PaymentCaptureMode captureMode,
-        @Nullable PaymentPayer payer,
-        @Nullable PaymentBillingAddress billingAddress) {}
+        @NotNull @Positive BigDecimal amount,
+        @NotNull PaymentCurrency currency,
+        @NotBlank String reference,
+        @NotBlank String description,
+        String successUrl,
+        String failedUrl,
+        @NotNull PaymentCaptureMode captureMode,
+        @Valid PaymentPayer payer,
+        @Valid PaymentBillingAddress billingAddress) {}

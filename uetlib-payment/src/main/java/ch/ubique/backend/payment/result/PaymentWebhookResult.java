@@ -4,17 +4,14 @@ import ch.ubique.backend.payment.PaymentFailureCode;
 import ch.ubique.backend.payment.model.PaymentFailure;
 import ch.ubique.backend.payment.model.PaymentWebhookEvent;
 
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /** Neutral result returned when parsing and validating a provider webhook. */
 public record PaymentWebhookResult(
-        boolean successful,
-        boolean ignored,
-        @Nullable PaymentWebhookEvent event,
-        @Nullable PaymentFailure failure) {
+        boolean successful, boolean ignored, PaymentWebhookEvent event, PaymentFailure failure) {
 
-    public static PaymentWebhookResult success(@NonNull PaymentWebhookEvent event) {
+    public static PaymentWebhookResult success(@NotNull PaymentWebhookEvent event) {
         return new PaymentWebhookResult(true, false, event, null);
     }
 
@@ -23,7 +20,7 @@ public record PaymentWebhookResult(
     }
 
     public static PaymentWebhookResult failure(
-            @NonNull PaymentFailureCode code, @NonNull String message) {
+            @NotNull PaymentFailureCode code, @NotBlank String message) {
         return new PaymentWebhookResult(false, false, null, new PaymentFailure(code, message));
     }
 }
