@@ -42,7 +42,7 @@
         <dependency>
             <groupId>ch.postfinance</groupId>
             <artifactId>postfinancecheckout-java-sdk</artifactId>
-            <version>9.0.0</version>
+            <version>9.4.0</version>
         </dependency>
 
         <dependency>
