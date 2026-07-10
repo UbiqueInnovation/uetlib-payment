@@ -27,6 +27,8 @@ import ch.ubique.backend.payment.result.PaymentWebhookResult;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +41,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
     private final long spaceId;
     private final long userId;
     private final String authKey;
+    private final CloseableHttpClient httpClient;
     private final boolean signatureValidationEnabled;
     private final PostfinanceOperationsClient operationsClient;
     private final PostfinanceTransactionFactory transactionFactory;
@@ -53,10 +56,31 @@ public class PostfinancePaymentProvider implements PaymentProvider {
             final String productSku,
             final String productUniqueId,
             final boolean signatureValidationEnabled) {
+        this(
+                objectMapper,
+                spaceId,
+                userId,
+                authKey,
+                productSku,
+                productUniqueId,
+                signatureValidationEnabled,
+                HttpClients.createDefault());
+    }
+
+    public PostfinancePaymentProvider(
+            final ObjectMapper objectMapper,
+            final long spaceId,
+            final long userId,
+            final String authKey,
+            final String productSku,
+            final String productUniqueId,
+            final boolean signatureValidationEnabled,
+            final CloseableHttpClient httpClient) {
         PostfinanceAuthKeyValidator.validate(authKey);
         this.spaceId = spaceId;
         this.userId = userId;
         this.authKey = authKey;
+        this.httpClient = httpClient;
         this.signatureValidationEnabled = signatureValidationEnabled;
         this.operationsClient = new PostfinanceOperationsClient(spaceId, productUniqueId);
         this.transactionFactory = new PostfinanceTransactionFactory(productSku, productUniqueId);
@@ -65,11 +89,11 @@ public class PostfinancePaymentProvider implements PaymentProvider {
     }
 
     public TransactionsService createTransactionsService() {
-        return new TransactionsService(new ApiClient(userId, authKey));
+        return new TransactionsService(new ApiClient(userId, authKey, httpClient));
     }
 
     public WebhookEncryptionKeysService createWebhookEncryptionKeysService() {
-        return new WebhookEncryptionKeysService(new ApiClient(userId, authKey));
+        return new WebhookEncryptionKeysService(new ApiClient(userId, authKey, httpClient));
     }
 
     @Override

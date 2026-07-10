@@ -1,7 +1,11 @@
 package ch.ubique.backend.payment.postfinance;
 
+import ch.ubique.backend.payment.postfinance.internal.PostfinanceHttpClientFactory;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -10,9 +14,17 @@ import org.springframework.context.annotation.Bean;
 @EnableConfigurationProperties(PostfinancePaymentProviderProperties.class)
 public class PostfinancePaymentProviderAutoConfiguration {
 
+    @Bean(name = "postfinanceHttpClient", destroyMethod = "close")
+    public CloseableHttpClient postfinanceHttpClient(
+            final PostfinancePaymentProviderProperties properties) {
+        return PostfinanceHttpClientFactory.create(properties.httpLoggingEnabled());
+    }
+
     @Bean
     public PostfinancePaymentProvider postfinancePaymentProvider(
-            ObjectMapper objectMapper, final PostfinancePaymentProviderProperties properties) {
+            ObjectMapper objectMapper,
+            final PostfinancePaymentProviderProperties properties,
+            @Qualifier("postfinanceHttpClient") final CloseableHttpClient httpClient) {
         return new PostfinancePaymentProvider(
                 objectMapper,
                 properties.spaceId(),
@@ -20,6 +32,7 @@ public class PostfinancePaymentProviderAutoConfiguration {
                 properties.authKey(),
                 properties.productSku(),
                 properties.productUniqueId(),
-                properties.signatureValidationEnabled());
+                properties.signatureValidationEnabled(),
+                httpClient);
     }
 }

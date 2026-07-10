@@ -12,4 +12,5 @@ public record PostfinancePaymentProviderProperties(
         @NotBlank String authKey,
         @NotBlank String productSku,
         @NotBlank String productUniqueId,
-        @DefaultValue("true") boolean signatureValidationEnabled) {}
+        @DefaultValue("true") boolean signatureValidationEnabled,
+        @DefaultValue("false") boolean httpLoggingEnabled) {}
