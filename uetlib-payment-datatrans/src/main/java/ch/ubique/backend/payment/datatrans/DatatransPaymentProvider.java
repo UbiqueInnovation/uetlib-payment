@@ -1,5 +1,7 @@
 package ch.ubique.backend.payment.datatrans;
 
+import static java.util.Objects.requireNonNull;
+
 import ch.ubique.backend.payment.PaymentFailureCode;
 import ch.ubique.backend.payment.PaymentProvider;
 import ch.ubique.backend.payment.PaymentProviderType;
@@ -18,11 +20,14 @@ import ch.ubique.backend.payment.result.PaymentWebhookResult;
 import ch.ubique.datatrans.model.transactions.DatatransInitializeTransactionResponse;
 import ch.ubique.datatrans.service.DatatransTransactionClient;
 
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestClient;
 
 import tools.jackson.databind.ObjectMapper;
+
+import java.util.Map;
 
 public class DatatransPaymentProvider implements PaymentProvider {
 
@@ -87,7 +92,8 @@ public class DatatransPaymentProvider implements PaymentProvider {
     public PaymentStatusResult getStatus(final String providerTransactionId) {
         try {
             final var response =
-                    datatransTransactionClient.getTransactionStatus(providerTransactionId);
+                    requireNonNull(
+                            datatransTransactionClient.getTransactionStatus(providerTransactionId));
             return statusMapper.toStatusResult(response);
         } catch (Exception e) {
             logger.error(
@@ -102,7 +108,7 @@ public class DatatransPaymentProvider implements PaymentProvider {
 
     @Override
     public PaymentWebhookResult processWebhook(
-            final String rawPayload, final java.util.Map<String, String> headers) {
+            final String rawPayload, final @Nullable Map<String, String> headers) {
         final var result = webhookParser.parse(rawPayload);
         if (!result.successful() && !result.ignored()) {
             logger.info("Rejected Datatrans webhook");

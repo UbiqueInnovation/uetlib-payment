@@ -36,9 +36,6 @@ public class DatatransPaymentStatusMapper {
     }
 
     public TransactionStatus mapStatus(final DatatransTransactionStatus status) {
-        if (status == null) {
-            return TransactionStatus.FAILED;
-        }
         return switch (status) {
             case INITIALIZED, CHALLENGE_REQUIRED, CHALLENGE_ONGOING -> TransactionStatus.PENDING;
             case AUTHENTICATED, AUTHORIZED -> TransactionStatus.AUTHORIZED;
@@ -48,10 +45,7 @@ public class DatatransPaymentStatusMapper {
         };
     }
 
-    private @Nullable PaymentMethod mapPaymentMethod(final DatatransPaymentMethod paymentMethod) {
-        if (paymentMethod == null) {
-            return null;
-        }
+    private PaymentMethod mapPaymentMethod(final DatatransPaymentMethod paymentMethod) {
         return switch (paymentMethod) {
             case ECA -> PaymentMethod.MASTERCARD;
             case VIS -> PaymentMethod.VISA;
@@ -65,7 +59,8 @@ public class DatatransPaymentStatusMapper {
         };
     }
 
-    private @Nullable String extractFailureReason(final DatatransTransactionStatusResponse response) {
+    private @Nullable String extractFailureReason(
+            final DatatransTransactionStatusResponse response) {
         final var failDetail = extractFailDetail(response);
         if (failDetail == null) {
             return null;
@@ -73,7 +68,8 @@ public class DatatransPaymentStatusMapper {
         return failDetail.reason().name();
     }
 
-    private @Nullable String extractFailureMessage(final DatatransTransactionStatusResponse response) {
+    private @Nullable String extractFailureMessage(
+            final DatatransTransactionStatusResponse response) {
         final var failDetail = extractFailDetail(response);
         if (failDetail == null || failDetail.fail() == null || failDetail.fail().isBlank()) {
             return null;
@@ -83,13 +79,7 @@ public class DatatransPaymentStatusMapper {
 
     private @Nullable DatatransTransactionStatusDetailFail extractFailDetail(
             final DatatransTransactionStatusResponse response) {
-        if (response == null) {
-            return null;
-        }
         final var detail = response.detail();
-        if (detail == null) {
-            return null;
-        }
         return detail.fail();
     }
 }

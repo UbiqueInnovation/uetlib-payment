@@ -53,9 +53,6 @@ public class DatatransPaymentRequestFactory {
     }
 
     private String normalizeLanguage(final Locale locale) {
-        if (locale == null) {
-            return "en";
-        }
         final var language = locale.getLanguage();
         if (language.length() != 2) {
             return "en";

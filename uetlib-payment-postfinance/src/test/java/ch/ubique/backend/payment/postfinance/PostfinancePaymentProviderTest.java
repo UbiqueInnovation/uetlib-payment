@@ -26,10 +26,6 @@ import ch.ubique.backend.payment.command.PaymentCaptureCommand;
 import ch.ubique.backend.payment.command.PaymentInitCommand;
 import ch.ubique.backend.payment.model.PaymentBillingAddress;
 import ch.ubique.backend.payment.model.PaymentPayer;
-import ch.ubique.backend.payment.result.PaymentInitResult;
-import ch.ubique.backend.payment.result.PaymentStatusResult;
-
-import tools.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,14 +33,20 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+
 import java.math.BigDecimal;
 
 class PostfinancePaymentProviderTest {
+
+    private static final String TEST_PRODUCT_SKU = "CHMOB-SUB";
+    private static final String TEST_PRODUCT_UNIQUE_ID = "CHMOB-SUB";
+    private static final ObjectMapper jsonMapper = JsonMapper.builder().build();
+
     @Mock private TransactionsService transactionsService;
     private PostfinancePaymentProvider postfinancePaymentProvider;
     private final long testSpaceId = 1L;
-    private static final String TEST_PRODUCT_SKU = "CHMOB-SUB";
-    private static final String TEST_PRODUCT_UNIQUE_ID = "CHMOB-SUB";
 
     @BeforeEach
     void setUp() {
@@ -64,9 +66,9 @@ class PostfinancePaymentProviderTest {
 
     @Test
     void initiateTransaction_success() throws ApiException {
-        PaymentBillingAddress billingAddress =
+        final var billingAddress =
                 new PaymentBillingAddress("Main Street", "10", null, "Bern", "3000", "CH");
-        PaymentInitCommand command =
+        final var command =
                 new PaymentInitCommand(
                         new BigDecimal("100.00"),
                         PaymentCurrency.CHF,
@@ -78,15 +80,14 @@ class PostfinancePaymentProviderTest {
                         new PaymentPayer("12345", "Ada", "Lovelace", "ada@example.com"),
                         billingAddress);
 
-        Transaction created = mock(Transaction.class);
+        final var created = mock(Transaction.class);
         when(created.getId()).thenReturn(1L);
         when(created.getState()).thenReturn(TransactionState.AUTHORIZED);
         when(created.getCurrency()).thenReturn("CHF");
         when(created.getAuthorizationAmount()).thenReturn(new BigDecimal("100.00"));
         when(created.getVersion()).thenReturn(1);
 
-        ArgumentCaptor<TransactionCreate> transactionCaptor =
-                ArgumentCaptor.forClass(TransactionCreate.class);
+        final var transactionCaptor = ArgumentCaptor.forClass(TransactionCreate.class);
         when(transactionsService.postPaymentTransactions(
                         anyLong(), transactionCaptor.capture(), any()))
                 .thenReturn(created);
@@ -96,15 +97,15 @@ class PostfinancePaymentProviderTest {
         when(transactionsService.getPaymentTransactionsIdPaymentPageUrl(anyLong(), anyLong()))
                 .thenReturn("http://page.url");
 
-        PaymentInitResult response = postfinancePaymentProvider.initiate(command);
+        final var response = postfinancePaymentProvider.initiate(command);
 
-        assertEquals(true, response.successful());
+        assertTrue(response.successful());
         assertEquals("1", response.providerTransactionId());
         assertEquals("http://js.url", response.javascriptUrl());
         assertEquals("http://page.url", response.paymentPageUrl());
         assertEquals("REG-11111111", response.providerReference());
         assertEquals(TransactionStatus.AUTHORIZED, response.status());
-        TransactionCreate sent = transactionCaptor.getValue();
+        final var sent = transactionCaptor.getValue();
         assertEquals("REG-11111111", sent.getMerchantReference());
         assertEquals("ada@example.com", sent.getCustomerEmailAddress());
         assertEquals("Ada", sent.getBillingAddress().getGivenName());
@@ -119,7 +120,7 @@ class PostfinancePaymentProviderTest {
 
     @Test
     void getTransactionStatus_success() throws ApiException {
-        Transaction transaction = mock(Transaction.class);
+        final var transaction = mock(Transaction.class);
         when(transaction.getState()).thenReturn(TransactionState.AUTHORIZED);
         when(transaction.getAuthorizationAmount()).thenReturn(new BigDecimal("100.00"));
         when(transaction.getVersion()).thenReturn(2);
@@ -128,9 +129,9 @@ class PostfinancePaymentProviderTest {
         when(transactionsService.getPaymentTransactionsId(1L, testSpaceId, null))
                 .thenReturn(transaction);
 
-        PaymentStatusResult response = postfinancePaymentProvider.getStatus("1");
+        final var response = postfinancePaymentProvider.getStatus("1");
 
-        assertEquals(true, response.successful());
+        assertTrue(response.successful());
         assertEquals(TransactionStatus.AUTHORIZED, response.paymentStatus());
     }
 
@@ -170,12 +171,12 @@ class PostfinancePaymentProviderTest {
 
     @Test
     void constructor_rejectsWeakAuthKey() {
-        IllegalStateException exception =
+        final var exception =
                 assertThrows(
                         IllegalStateException.class,
                         () ->
                                 new PostfinancePaymentProvider(
-                                        new ObjectMapper(),
+                                        jsonMapper,
                                         testSpaceId,
                                         1L,
                                         "VE9ETw==",
@@ -190,12 +191,12 @@ class PostfinancePaymentProviderTest {
 
     @Test
     void constructor_rejectsMalformedBase64AuthKey() {
-        IllegalStateException exception =
+        final var exception =
                 assertThrows(
                         IllegalStateException.class,
                         () ->
                                 new PostfinancePaymentProvider(
-                                        new ObjectMapper(),
+                                        jsonMapper,
                                         testSpaceId,
                                         1L,
                                         "not-base64!!!",
