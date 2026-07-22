@@ -17,11 +17,20 @@
         <artifact-package-name>ch.ubique.backend.payment.postfinance</artifact-package-name>
     </properties>
 
-    <dependencies>
+        <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>ch.ubique</groupId>
+                <artifactId>uetlib-payment</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+<dependencies>
         <dependency>
             <groupId>ch.ubique</groupId>
             <artifactId>uetlib-payment</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>
