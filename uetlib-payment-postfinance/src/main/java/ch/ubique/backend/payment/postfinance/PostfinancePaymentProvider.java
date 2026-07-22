@@ -1,5 +1,7 @@
 package ch.ubique.backend.payment.postfinance;
 
+import static java.util.Objects.requireNonNull;
+
 import ch.postfinancecheckout.sdk.ApiClient;
 import ch.postfinancecheckout.sdk.ApiException;
 import ch.postfinancecheckout.sdk.model.TransactionState;
@@ -12,6 +14,7 @@ import ch.ubique.backend.payment.TransactionStatus;
 import ch.ubique.backend.payment.command.PaymentCancelCommand;
 import ch.ubique.backend.payment.command.PaymentCaptureCommand;
 import ch.ubique.backend.payment.command.PaymentInitCommand;
+import ch.ubique.backend.payment.model.PaymentWebhookEvent;
 import ch.ubique.backend.payment.postfinance.internal.PostfinanceAuthKeyValidator;
 import ch.ubique.backend.payment.postfinance.internal.PostfinanceOperationsClient;
 import ch.ubique.backend.payment.postfinance.internal.PostfinanceStatusMapper;
@@ -278,8 +281,8 @@ public class PostfinancePaymentProvider implements PaymentProvider {
         }
 
         return PaymentWebhookResult.success(
-                new ch.ubique.backend.payment.model.PaymentWebhookEvent(
-                        webhookPayload.entityId().toString(),
+                new PaymentWebhookEvent(
+                        requireNonNull(webhookPayload.entityId()).toString(),
                         transactionStatus,
                         webhookPayload.state(),
                         null,

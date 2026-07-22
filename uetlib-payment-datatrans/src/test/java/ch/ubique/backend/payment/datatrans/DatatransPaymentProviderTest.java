@@ -1,8 +1,6 @@
 package ch.ubique.backend.payment.datatrans;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -174,6 +172,7 @@ class DatatransPaymentProviderTest {
         final var result = provider.processWebhook(payload, Map.of());
 
         assertTrue(result.successful());
+        assertNotNull(result.event());
         assertEquals("trx-1", result.event().providerTransactionId());
         assertEquals(TransactionStatus.COMPLETED, result.event().paymentStatus());
     }

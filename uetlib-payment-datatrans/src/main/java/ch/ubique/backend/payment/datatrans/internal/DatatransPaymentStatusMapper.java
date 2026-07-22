@@ -1,5 +1,7 @@
 package ch.ubique.backend.payment.datatrans.internal;
 
+import static java.util.Objects.requireNonNull;
+
 import ch.ubique.backend.payment.PaymentMethod;
 import ch.ubique.backend.payment.TransactionStatus;
 import ch.ubique.backend.payment.model.PaymentWebhookEvent;
@@ -13,29 +15,45 @@ import org.jspecify.annotations.Nullable;
 
 public class DatatransPaymentStatusMapper {
 
-    public PaymentStatusResult toStatusResult(final DatatransTransactionStatusResponse response) {
+    public PaymentStatusResult toStatusResult(
+            final @Nullable DatatransTransactionStatusResponse response) {
+        final var status = mapStatus(response == null ? null : response.status());
+        final var rawProviderStatus = response == null ? null : response.status().name();
+        final var currency = response == null ? null : response.currency().name();
+        final var paymentMethod =
+                response == null ? null : mapPaymentMethod(response.paymentMethod());
         return PaymentStatusResult.success(
-                mapStatus(response.status()),
-                response.status().name(),
-                response.currency().name(),
+                status,
+                rawProviderStatus,
+                currency,
                 null,
-                mapPaymentMethod(response.paymentMethod()),
+                paymentMethod,
                 extractFailureReason(response),
                 extractFailureMessage(response));
     }
 
-    public PaymentWebhookEvent toWebhookEvent(final DatatransTransactionStatusResponse response) {
+    public PaymentWebhookEvent toWebhookEvent(
+            final @Nullable DatatransTransactionStatusResponse response) {
+        final var status = mapStatus(response == null ? null : response.status());
+        final var rawProviderStatus = response == null ? null : response.status().name();
+        final var transactionId = response == null ? null : response.transactionId();
+        final var currency = response == null ? null : response.currency().name();
+        final var paymentMethod =
+                response == null ? null : mapPaymentMethod(response.paymentMethod());
         return new PaymentWebhookEvent(
-                response.transactionId(),
-                mapStatus(response.status()),
-                response.status().name(),
-                mapPaymentMethod(response.paymentMethod()),
-                response.currency().name(),
+                requireNonNull(transactionId),
+                status,
+                rawProviderStatus,
+                paymentMethod,
+                currency,
                 extractFailureReason(response),
                 extractFailureMessage(response));
     }
 
-    public TransactionStatus mapStatus(final DatatransTransactionStatus status) {
+    public TransactionStatus mapStatus(final @Nullable DatatransTransactionStatus status) {
+        if (status == null) {
+            return TransactionStatus.FAILED;
+        }
         return switch (status) {
             case INITIALIZED, CHALLENGE_REQUIRED, CHALLENGE_ONGOING -> TransactionStatus.PENDING;
             case AUTHENTICATED, AUTHORIZED -> TransactionStatus.AUTHORIZED;
@@ -45,7 +63,10 @@ public class DatatransPaymentStatusMapper {
         };
     }
 
-    private PaymentMethod mapPaymentMethod(final DatatransPaymentMethod paymentMethod) {
+    private PaymentMethod mapPaymentMethod(final @Nullable DatatransPaymentMethod paymentMethod) {
+        if (paymentMethod == null) {
+            return PaymentMethod.UNKNOWN;
+        }
         return switch (paymentMethod) {
             case ECA -> PaymentMethod.MASTERCARD;
             case VIS -> PaymentMethod.VISA;
@@ -60,7 +81,7 @@ public class DatatransPaymentStatusMapper {
     }
 
     private @Nullable String extractFailureReason(
-            final DatatransTransactionStatusResponse response) {
+            final @Nullable DatatransTransactionStatusResponse response) {
         final var failDetail = extractFailDetail(response);
         if (failDetail == null) {
             return null;
@@ -69,7 +90,7 @@ public class DatatransPaymentStatusMapper {
     }
 
     private @Nullable String extractFailureMessage(
-            final DatatransTransactionStatusResponse response) {
+            final @Nullable DatatransTransactionStatusResponse response) {
         final var failDetail = extractFailDetail(response);
         if (failDetail == null || failDetail.fail() == null || failDetail.fail().isBlank()) {
             return null;
@@ -78,8 +99,14 @@ public class DatatransPaymentStatusMapper {
     }
 
     private @Nullable DatatransTransactionStatusDetailFail extractFailDetail(
-            final DatatransTransactionStatusResponse response) {
+            final @Nullable DatatransTransactionStatusResponse response) {
+        if (response == null) {
+            return null;
+        }
         final var detail = response.detail();
+        if (detail == null) {
+            return null;
+        }
         return detail.fail();
     }
 }

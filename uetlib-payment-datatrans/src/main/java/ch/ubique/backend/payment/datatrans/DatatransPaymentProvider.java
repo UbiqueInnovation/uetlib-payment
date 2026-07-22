@@ -92,8 +92,7 @@ public class DatatransPaymentProvider implements PaymentProvider {
     public PaymentStatusResult getStatus(final String providerTransactionId) {
         try {
             final var response =
-                    requireNonNull(
-                            datatransTransactionClient.getTransactionStatus(providerTransactionId));
+                            datatransTransactionClient.getTransactionStatus(providerTransactionId);
             return statusMapper.toStatusResult(response);
         } catch (Exception e) {
             logger.error(
