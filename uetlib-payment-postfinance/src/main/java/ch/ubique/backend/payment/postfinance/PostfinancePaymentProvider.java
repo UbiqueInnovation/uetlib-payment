@@ -27,6 +27,7 @@ import ch.ubique.backend.payment.result.PaymentWebhookResult;
 
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -260,6 +261,11 @@ public class PostfinancePaymentProvider implements PaymentProvider {
         }
 
         final var webhookPayload = webhookParser.parse(rawPayload);
+        if (webhookPayload == null) {
+            return PaymentWebhookResult.failure(
+                    PaymentFailureCode.INVALID_PROVIDER_RESPONSE,
+                    "Invalid PostFinance webhook payload");
+        }
         final var payloadValidation = webhookParser.validatePayload(webhookPayload);
         if (payloadValidation != null) {
             return payloadValidation;
@@ -286,7 +292,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
                         null));
     }
 
-    private boolean isSignatureValid(final String payload, final String signatureHeader) {
+    private boolean isSignatureValid(final String payload, final @Nullable String signatureHeader) {
         if (signatureHeader == null || signatureHeader.isBlank()) {
             return false;
         }
@@ -299,7 +305,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
         }
     }
 
-    private TransactionStatus resolveWebhookTransactionStatus(
+    private @Nullable TransactionStatus resolveWebhookTransactionStatus(
             final PostfinanceWebhookPayload webhookPayload) {
         if (webhookPayload.state() != null && !webhookPayload.state().isBlank()) {
             try {
@@ -308,6 +314,10 @@ public class PostfinancePaymentProvider implements PaymentProvider {
             } catch (IllegalArgumentException e) {
                 logger.info("Unknown PostFinance transaction state {}", webhookPayload.state());
             }
+        }
+
+        if (webhookPayload.entityId() == null) {
+            return null;
         }
 
         final PaymentStatusResult statusResult = getStatus(webhookPayload.entityId().toString());

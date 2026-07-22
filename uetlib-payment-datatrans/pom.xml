@@ -15,24 +15,7 @@
 
     <properties>
         <artifact-package-name>ch.ubique.backend.payment.datatrans</artifact-package-name>
-        <datatrans-api-client.version>0.2.2</datatrans-api-client.version>
-        <spring-cloud-openfeign.version>4.3.0</spring-cloud-openfeign.version>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>ch.ubique.datatrans</groupId>
-                <artifactId>datatrans-api-client-service</artifactId>
-                <version>${datatrans-api-client.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>ch.ubique</groupId>
-                <artifactId>uetlib-payment</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -41,35 +24,27 @@
         </dependency>
 
         <dependency>
+            <groupId>ch.ubique</groupId>
+            <artifactId>uetlib-spring-boot</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ch.ubique</groupId>
+            <artifactId>uetlib-spring-cloud</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-openfeign-core</artifactId>
-            <version>${spring-cloud-openfeign.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-context</artifactId>
-            <version>${spring-cloud-openfeign.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
+            <artifactId>spring-boot-restclient</artifactId>
         </dependency>
 
         <dependency>
             <groupId>ch.ubique.datatrans</groupId>
             <artifactId>datatrans-api-client-service</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>tools.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
 
         <dependency>
@@ -86,14 +61,18 @@
 
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>ch.ubique.datatrans</groupId>
+                <artifactId>datatrans-api-client-service</artifactId>
+                <version>0.2.2</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>
