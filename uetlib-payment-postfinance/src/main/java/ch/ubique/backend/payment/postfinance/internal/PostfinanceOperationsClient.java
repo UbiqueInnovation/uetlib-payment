@@ -31,7 +31,7 @@ public class PostfinanceOperationsClient {
         }
     }
 
-    public TransactionCompletion capture(
+    public @Nullable TransactionCompletion capture(
             final TransactionsService transactionsService,
             final Long transactionId,
             final PaymentCaptureCommand command)
@@ -48,7 +48,7 @@ public class PostfinanceOperationsClient {
                 transactionId, spaceId, null);
     }
 
-    public TransactionVoid cancel(
+    public @Nullable TransactionVoid cancel(
             final TransactionsService transactionsService, final Long transactionId)
             throws ApiException {
         return transactionsService.postPaymentTransactionsIdVoidOnline(

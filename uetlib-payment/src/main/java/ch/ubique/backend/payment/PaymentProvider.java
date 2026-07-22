@@ -8,6 +8,8 @@ import ch.ubique.backend.payment.result.PaymentOperationResult;
 import ch.ubique.backend.payment.result.PaymentStatusResult;
 import ch.ubique.backend.payment.result.PaymentWebhookResult;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.Map;
 
 /**
@@ -28,7 +30,7 @@ public interface PaymentProvider {
     PaymentStatusResult getStatus(String providerTransactionId);
 
     /** Validates and parses a raw provider webhook into a neutral webhook result. */
-    PaymentWebhookResult processWebhook(String rawPayload, Map<String, String> headers);
+    PaymentWebhookResult processWebhook(String rawPayload, @Nullable Map<String, String> headers);
 
     /**
      * Captures or settles a previously authorized provider-side payment transaction.
@@ -36,7 +38,7 @@ public interface PaymentProvider {
      * <p>Providers that do not support a separate capture step may keep the default unsupported
      * implementation.
      */
-    default PaymentOperationResult capture(PaymentCaptureCommand command) {
+    default PaymentOperationResult capture(final PaymentCaptureCommand command) {
         return PaymentOperationResult.failure(
                 PaymentFailureCode.UNSUPPORTED_OPERATION,
                 "Payment capture is not supported by provider " + getType());
@@ -48,7 +50,7 @@ public interface PaymentProvider {
      * <p>Providers that do not support a separate cancel step may keep the default unsupported
      * implementation.
      */
-    default PaymentOperationResult cancel(PaymentCancelCommand command) {
+    default PaymentOperationResult cancel(final PaymentCancelCommand command) {
         return PaymentOperationResult.failure(
                 PaymentFailureCode.UNSUPPORTED_OPERATION,
                 "Payment cancel is not supported by provider " + getType());

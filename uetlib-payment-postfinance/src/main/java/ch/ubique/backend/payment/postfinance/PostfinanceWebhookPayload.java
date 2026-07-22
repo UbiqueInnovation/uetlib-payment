@@ -6,4 +6,7 @@ import org.jspecify.annotations.Nullable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record PostfinanceWebhookPayload(
-        Long entityId, String listenerEntityTechnicalName, Long spaceId, @Nullable String state) {}
+        @Nullable Long entityId,
+        @Nullable String listenerEntityTechnicalName,
+        @Nullable Long spaceId,
+        @Nullable String state) {}

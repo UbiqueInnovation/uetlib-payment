@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import org.jspecify.annotations.Nullable;
 
 /** Provider-neutral command used to initiate a payment transaction. */
 public record PaymentInitCommand(
@@ -18,8 +19,8 @@ public record PaymentInitCommand(
         @NotNull PaymentCurrency currency,
         @NotBlank String reference,
         @NotBlank String description,
-        String successUrl,
-        String failedUrl,
+        @Nullable String successUrl,
+        @Nullable String failedUrl,
         @NotNull PaymentCaptureMode captureMode,
-        @Valid PaymentPayer payer,
-        @Valid PaymentBillingAddress billingAddress) {}
+        @Valid @Nullable PaymentPayer payer,
+        @Valid @Nullable PaymentBillingAddress billingAddress) {}
