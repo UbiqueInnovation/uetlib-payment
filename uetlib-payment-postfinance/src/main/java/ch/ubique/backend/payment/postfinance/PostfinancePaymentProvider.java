@@ -25,12 +25,12 @@ import ch.ubique.backend.payment.result.PaymentOperationResult;
 import ch.ubique.backend.payment.result.PaymentStatusResult;
 import ch.ubique.backend.payment.result.PaymentWebhookResult;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.Map;
 

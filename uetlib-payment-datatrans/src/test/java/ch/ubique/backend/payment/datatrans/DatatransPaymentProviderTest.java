@@ -22,8 +22,6 @@ import ch.ubique.backend.payment.result.PaymentOperationResult;
 import ch.ubique.datatrans.model.transactions.*;
 import ch.ubique.datatrans.service.DatatransTransactionClient;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +30,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
+
+import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.util.Map;

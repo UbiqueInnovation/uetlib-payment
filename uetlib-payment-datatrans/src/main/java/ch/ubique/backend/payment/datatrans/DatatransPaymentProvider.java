@@ -18,11 +18,11 @@ import ch.ubique.backend.payment.result.PaymentWebhookResult;
 import ch.ubique.datatrans.model.transactions.DatatransInitializeTransactionResponse;
 import ch.ubique.datatrans.service.DatatransTransactionClient;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestClient;
+
+import tools.jackson.databind.ObjectMapper;
 
 public class DatatransPaymentProvider implements PaymentProvider {
 
