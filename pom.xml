@@ -15,6 +15,15 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-boot.version>3.5.13</spring-boot.version>
+        <!-- Sonar & Jacoco coverage reports -->
+        <sonar.coverage.module>uetlib-payment</sonar.coverage.module>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.basedir}/../${sonar.coverage.module}/target/site/jacoco-aggregate/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.projectName>${project.artifactId}</sonar.projectName>
+        <sonar.projectKey>UbiqueInnovation_${sonar.projectName}</sonar.projectKey>
+        <sonar.organization>ubiqueinnovation</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
     <modules>
