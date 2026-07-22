@@ -4,33 +4,35 @@ import ch.ubique.backend.payment.PaymentFailureCode;
 import ch.ubique.backend.payment.TransactionStatus;
 import ch.ubique.backend.payment.model.PaymentFailure;
 
-import java.math.BigDecimal;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
+import org.jspecify.annotations.Nullable;
+
+import java.math.BigDecimal;
 
 /** Provider-neutral response returned after successful payment initialization. */
 public record PaymentInitResult(
         boolean successful,
-        String providerTransactionId,
-        String javascriptUrl,
-        String paymentPageUrl,
-        String providerReference,
-        TransactionStatus status,
-        String currency,
-        BigDecimal authorizationAmount,
-        Integer version,
-        PaymentFailure failure) {
+        @Nullable String providerTransactionId,
+        @Nullable String javascriptUrl,
+        @Nullable String paymentPageUrl,
+        @Nullable String providerReference,
+        @Nullable TransactionStatus status,
+        @Nullable String currency,
+        @Nullable BigDecimal authorizationAmount,
+        @Nullable Integer version,
+        @Nullable PaymentFailure failure) {
 
     public static PaymentInitResult success(
-            @NotBlank String providerTransactionId,
-            String javascriptUrl,
-            String paymentPageUrl,
-            @NotBlank String providerReference,
-            @NotNull TransactionStatus status,
-            String currency,
-            BigDecimal authorizationAmount,
-            Integer version) {
+            @NotBlank final String providerTransactionId,
+            @Nullable final String javascriptUrl,
+            @Nullable final String paymentPageUrl,
+            @NotBlank final String providerReference,
+            @NotNull final TransactionStatus status,
+            @Nullable final String currency,
+            @Nullable final BigDecimal authorizationAmount,
+            @Nullable final Integer version) {
         return new PaymentInitResult(
                 true,
                 providerTransactionId,
@@ -45,8 +47,17 @@ public record PaymentInitResult(
     }
 
     public static PaymentInitResult failure(
-            @NotNull PaymentFailureCode code, @NotBlank String message) {
+            @NotNull final PaymentFailureCode code, @NotBlank final String message) {
         return new PaymentInitResult(
-                false, null, null, null, null, null, null, null, null, new PaymentFailure(code, message));
+                false,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                new PaymentFailure(code, message));
     }
 }

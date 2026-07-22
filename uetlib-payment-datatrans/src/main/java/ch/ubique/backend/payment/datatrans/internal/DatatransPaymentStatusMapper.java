@@ -9,6 +9,8 @@ import ch.ubique.datatrans.model.transactions.DatatransTransactionStatus;
 import ch.ubique.datatrans.model.transactions.DatatransTransactionStatusDetailFail;
 import ch.ubique.datatrans.model.transactions.DatatransTransactionStatusResponse;
 
+import org.jspecify.annotations.Nullable;
+
 public class DatatransPaymentStatusMapper {
 
     public PaymentStatusResult toStatusResult(final DatatransTransactionStatusResponse response) {
@@ -46,7 +48,7 @@ public class DatatransPaymentStatusMapper {
         };
     }
 
-    private PaymentMethod mapPaymentMethod(final DatatransPaymentMethod paymentMethod) {
+    private @Nullable PaymentMethod mapPaymentMethod(final DatatransPaymentMethod paymentMethod) {
         if (paymentMethod == null) {
             return null;
         }
@@ -63,7 +65,7 @@ public class DatatransPaymentStatusMapper {
         };
     }
 
-    private String extractFailureReason(final DatatransTransactionStatusResponse response) {
+    private @Nullable String extractFailureReason(final DatatransTransactionStatusResponse response) {
         final var failDetail = extractFailDetail(response);
         if (failDetail == null) {
             return null;
@@ -71,7 +73,7 @@ public class DatatransPaymentStatusMapper {
         return failDetail.reason().name();
     }
 
-    private String extractFailureMessage(final DatatransTransactionStatusResponse response) {
+    private @Nullable String extractFailureMessage(final DatatransTransactionStatusResponse response) {
         final var failDetail = extractFailDetail(response);
         if (failDetail == null || failDetail.fail() == null || failDetail.fail().isBlank()) {
             return null;
@@ -79,7 +81,7 @@ public class DatatransPaymentStatusMapper {
         return failDetail.fail();
     }
 
-    private DatatransTransactionStatusDetailFail extractFailDetail(
+    private @Nullable DatatransTransactionStatusDetailFail extractFailDetail(
             final DatatransTransactionStatusResponse response) {
         if (response == null) {
             return null;

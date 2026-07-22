@@ -11,6 +11,7 @@ import ch.ubique.backend.payment.model.PaymentBillingAddress;
 import ch.ubique.backend.payment.model.PaymentPayer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jspecify.annotations.Nullable;
 
 public class PostfinanceTransactionFactory {
 
@@ -68,8 +69,8 @@ public class PostfinanceTransactionFactory {
         return lineItem;
     }
 
-    private AddressCreate buildBillingAddress(
-            final PaymentPayer payer, final PaymentBillingAddress billingAddressInput) {
+    private @Nullable AddressCreate buildBillingAddress(
+            final @Nullable PaymentPayer payer, final @Nullable PaymentBillingAddress billingAddressInput) {
         if (!hasPayerName(payer) && !hasBillingAddressData(billingAddressInput)) {
             return null;
         }
@@ -79,13 +80,13 @@ public class PostfinanceTransactionFactory {
         return billingAddress;
     }
 
-    private boolean hasPayerName(final PaymentPayer payer) {
+    private boolean hasPayerName(final @Nullable PaymentPayer payer) {
         return payer != null
                 && (StringUtils.isNotBlank(payer.givenName())
                         || StringUtils.isNotBlank(payer.familyName()));
     }
 
-    private void applyPayerName(final AddressCreate billingAddress, final PaymentPayer payer) {
+    private void applyPayerName(final AddressCreate billingAddress, final @Nullable PaymentPayer payer) {
         if (payer == null) {
             return;
         }
@@ -93,7 +94,7 @@ public class PostfinanceTransactionFactory {
         setIfNotBlank(billingAddress::setFamilyName, payer.familyName());
     }
 
-    private boolean hasBillingAddressData(final PaymentBillingAddress address) {
+    private boolean hasBillingAddressData(final @Nullable PaymentBillingAddress address) {
         if (address == null) {
             return false;
         }
@@ -106,7 +107,7 @@ public class PostfinanceTransactionFactory {
     }
 
     private void applyBillingAddress(
-            final AddressCreate billingAddress, final PaymentBillingAddress address) {
+            final AddressCreate billingAddress, final @Nullable PaymentBillingAddress address) {
         if (address == null) {
             return;
         }
@@ -117,7 +118,7 @@ public class PostfinanceTransactionFactory {
         setIfNotBlank(billingAddress::setDependentLocality, address.addendum());
     }
 
-    private String formatStreet(final PaymentBillingAddress address) {
+    private @Nullable String formatStreet(final PaymentBillingAddress address) {
         if (StringUtils.isNotBlank(address.street())
                 && StringUtils.isNotBlank(address.houseNumber())) {
             return address.street() + " " + address.houseNumber();
@@ -132,7 +133,7 @@ public class PostfinanceTransactionFactory {
     }
 
     private void setIfNotBlank(
-            final java.util.function.Consumer<String> setter, final String value) {
+            final java.util.function.Consumer<String> setter, final @Nullable String value) {
         if (StringUtils.isNotBlank(value)) {
             setter.accept(value);
         }

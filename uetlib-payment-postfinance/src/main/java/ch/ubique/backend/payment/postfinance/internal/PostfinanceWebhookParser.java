@@ -6,6 +6,8 @@ import ch.ubique.backend.payment.result.PaymentWebhookResult;
 
 import tools.jackson.databind.ObjectMapper;
 
+import org.jspecify.annotations.Nullable;
+
 public class PostfinanceWebhookParser {
 
     private final ObjectMapper objectMapper;
@@ -16,7 +18,10 @@ public class PostfinanceWebhookParser {
         this.spaceId = spaceId;
     }
 
-    public PostfinanceWebhookPayload parse(final String rawPayload) {
+    public @Nullable PostfinanceWebhookPayload parse(final @Nullable String rawPayload) {
+        if (rawPayload == null) {
+            return null;
+        }
         try {
             return objectMapper.readValue(rawPayload, PostfinanceWebhookPayload.class);
         } catch (Exception e) {
@@ -24,7 +29,7 @@ public class PostfinanceWebhookParser {
         }
     }
 
-    public PaymentWebhookResult validatePayload(final PostfinanceWebhookPayload payload) {
+    public @Nullable PaymentWebhookResult validatePayload(final @Nullable PostfinanceWebhookPayload payload) {
         if (payload == null) {
             return PaymentWebhookResult.failure(
                     PaymentFailureCode.INVALID_PROVIDER_RESPONSE,
