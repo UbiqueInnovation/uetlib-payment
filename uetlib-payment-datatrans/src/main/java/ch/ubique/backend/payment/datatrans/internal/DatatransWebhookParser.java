@@ -4,7 +4,7 @@ import ch.ubique.backend.payment.PaymentFailureCode;
 import ch.ubique.backend.payment.result.PaymentWebhookResult;
 import ch.ubique.datatrans.model.transactions.DatatransTransactionStatusResponse;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 public class DatatransWebhookParser {
 

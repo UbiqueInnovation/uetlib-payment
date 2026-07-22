@@ -29,7 +29,7 @@ import ch.ubique.backend.payment.model.PaymentPayer;
 import ch.ubique.backend.payment.result.PaymentInitResult;
 import ch.ubique.backend.payment.result.PaymentStatusResult;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

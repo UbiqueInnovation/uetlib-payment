@@ -2,7 +2,7 @@ package ch.ubique.backend.payment.postfinance;
 
 import ch.ubique.backend.payment.postfinance.internal.PostfinanceHttpClientFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.springframework.beans.factory.annotation.Qualifier;
