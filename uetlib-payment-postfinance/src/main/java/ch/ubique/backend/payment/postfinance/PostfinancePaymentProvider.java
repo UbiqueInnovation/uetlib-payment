@@ -1,7 +1,5 @@
 package ch.ubique.backend.payment.postfinance;
 
-import static java.util.Objects.requireNonNull;
-
 import ch.postfinancecheckout.sdk.ApiClient;
 import ch.postfinancecheckout.sdk.ApiException;
 import ch.postfinancecheckout.sdk.model.TransactionState;
@@ -271,7 +269,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
         }
 
         final var transactionStatus = resolveWebhookTransactionStatus(webhookPayload);
-        if (transactionStatus == null) {
+        if (transactionStatus == null || webhookPayload.entityId() == null) {
             logger.info(
                     "Unable to resolve PostFinance transaction state for entityId {}",
                     webhookPayload.entityId());
@@ -282,7 +280,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
 
         return PaymentWebhookResult.success(
                 new PaymentWebhookEvent(
-                        requireNonNull(webhookPayload.entityId()).toString(),
+                        webhookPayload.entityId().toString(),
                         transactionStatus,
                         webhookPayload.state(),
                         null,

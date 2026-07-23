@@ -1,7 +1,5 @@
 package ch.ubique.backend.payment.datatrans.internal;
 
-import static java.util.Objects.requireNonNull;
-
 import ch.ubique.backend.payment.PaymentMethod;
 import ch.ubique.backend.payment.TransactionStatus;
 import ch.ubique.backend.payment.model.PaymentWebhookEvent;
@@ -36,12 +34,12 @@ public class DatatransPaymentStatusMapper {
             final @Nullable DatatransTransactionStatusResponse response) {
         final var status = mapStatus(response == null ? null : response.status());
         final var rawProviderStatus = response == null ? null : response.status().name();
-        final var transactionId = response == null ? null : response.transactionId();
+        final var transactionId = response == null ? "" : response.transactionId();
         final var currency = response == null ? null : response.currency().name();
         final var paymentMethod =
                 response == null ? null : mapPaymentMethod(response.paymentMethod());
         return new PaymentWebhookEvent(
-                requireNonNull(transactionId),
+                transactionId,
                 status,
                 rawProviderStatus,
                 paymentMethod,
@@ -83,7 +81,7 @@ public class DatatransPaymentStatusMapper {
     private @Nullable String extractFailureReason(
             final @Nullable DatatransTransactionStatusResponse response) {
         final var failDetail = extractFailDetail(response);
-        if (failDetail == null) {
+        if (failDetail == null || failDetail.reason() == null) {
             return null;
         }
         return failDetail.reason().name();
@@ -92,10 +90,10 @@ public class DatatransPaymentStatusMapper {
     private @Nullable String extractFailureMessage(
             final @Nullable DatatransTransactionStatusResponse response) {
         final var failDetail = extractFailDetail(response);
-        if (failDetail == null || failDetail.fail() == null || failDetail.fail().isBlank()) {
+        if (failDetail == null || failDetail.message() == null || failDetail.message().isBlank()) {
             return null;
         }
-        return failDetail.fail();
+        return failDetail.message();
     }
 
     private @Nullable DatatransTransactionStatusDetailFail extractFailDetail(
