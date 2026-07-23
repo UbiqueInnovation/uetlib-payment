@@ -6,7 +6,7 @@ public final class DatatransAmountConverter {
 
     private DatatransAmountConverter() {}
 
-    public static int toMinorUnits(final BigDecimal amount) {
-        return amount.movePointRight(2).intValueExact();
+    public static long toMinorUnits(final BigDecimal amount) {
+        return amount.movePointRight(2).longValueExact();
     }
 }

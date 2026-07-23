@@ -1,6 +1,5 @@
 package ch.ubique.backend.payment.datatrans;
 
-import static java.util.Objects.requireNonNull;
 
 import ch.ubique.backend.payment.PaymentFailureCode;
 import ch.ubique.backend.payment.PaymentProvider;
@@ -77,7 +76,7 @@ public class DatatransPaymentProvider implements PaymentProvider {
                     request.currency().name(),
                     command.amount(),
                     null);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error(
                     "Failed to initialize Datatrans transaction for reference {}",
                     command.reference(),
@@ -92,9 +91,9 @@ public class DatatransPaymentProvider implements PaymentProvider {
     public PaymentStatusResult getStatus(final String providerTransactionId) {
         try {
             final var response =
-                            datatransTransactionClient.getTransactionStatus(providerTransactionId);
+                    datatransTransactionClient.getTransactionStatus(providerTransactionId);
             return statusMapper.toStatusResult(response);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error(
                     "Failed to fetch Datatrans transaction status for providerTransactionId {}",
                     providerTransactionId,

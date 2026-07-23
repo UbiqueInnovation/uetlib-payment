@@ -70,8 +70,14 @@
         <dependencies>
             <dependency>
                 <groupId>ch.ubique.datatrans</groupId>
+                <artifactId>datatrans-api-client-model</artifactId>
+                <version>1.0.0-alpha.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ch.ubique.datatrans</groupId>
                 <artifactId>datatrans-api-client-service</artifactId>
-                <version>0.2.2</version>
+                <version>1.0.0-alpha.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
