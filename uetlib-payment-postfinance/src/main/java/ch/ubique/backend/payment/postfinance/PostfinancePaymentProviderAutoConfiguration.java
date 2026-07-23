@@ -2,13 +2,13 @@ package ch.ubique.backend.payment.postfinance;
 
 import ch.ubique.backend.payment.postfinance.internal.PostfinanceHttpClientFactory;
 
-import tools.jackson.databind.ObjectMapper;
-
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+
+import tools.jackson.databind.ObjectMapper;
 
 @AutoConfiguration
 @EnableConfigurationProperties(PostfinancePaymentProviderProperties.class)
