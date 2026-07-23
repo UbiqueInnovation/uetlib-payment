@@ -70,7 +70,8 @@ public class PostfinanceTransactionFactory {
     }
 
     private @Nullable AddressCreate buildBillingAddress(
-            final @Nullable PaymentPayer payer, final @Nullable PaymentBillingAddress billingAddressInput) {
+            final @Nullable PaymentPayer payer,
+            final @Nullable PaymentBillingAddress billingAddressInput) {
         if (!hasPayerName(payer) && !hasBillingAddressData(billingAddressInput)) {
             return null;
         }
@@ -86,7 +87,8 @@ public class PostfinanceTransactionFactory {
                         || StringUtils.isNotBlank(payer.familyName()));
     }
 
-    private void applyPayerName(final AddressCreate billingAddress, final @Nullable PaymentPayer payer) {
+    private void applyPayerName(
+            final AddressCreate billingAddress, final @Nullable PaymentPayer payer) {
         if (payer == null) {
             return;
         }

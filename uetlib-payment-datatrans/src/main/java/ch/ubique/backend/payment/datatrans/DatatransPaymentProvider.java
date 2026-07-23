@@ -1,6 +1,5 @@
 package ch.ubique.backend.payment.datatrans;
 
-
 import ch.ubique.backend.payment.PaymentFailureCode;
 import ch.ubique.backend.payment.PaymentProvider;
 import ch.ubique.backend.payment.PaymentProviderType;

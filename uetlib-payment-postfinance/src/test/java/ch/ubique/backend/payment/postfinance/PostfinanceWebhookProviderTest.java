@@ -16,11 +16,11 @@ import ch.ubique.backend.payment.PaymentFailureCode;
 import ch.ubique.backend.payment.TransactionStatus;
 import ch.ubique.backend.payment.result.PaymentStatusResult;
 
-import tools.jackson.databind.ObjectMapper;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
+
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.Map;
 

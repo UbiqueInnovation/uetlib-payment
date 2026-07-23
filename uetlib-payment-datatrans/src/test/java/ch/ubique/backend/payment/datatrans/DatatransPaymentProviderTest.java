@@ -16,7 +16,6 @@ import ch.ubique.backend.payment.command.PaymentCancelCommand;
 import ch.ubique.backend.payment.command.PaymentCaptureCommand;
 import ch.ubique.backend.payment.command.PaymentInitCommand;
 import ch.ubique.backend.payment.model.PaymentPayer;
-import ch.ubique.backend.payment.result.PaymentOperationResult;
 import ch.ubique.datatrans.model.transactions.*;
 import ch.ubique.datatrans.service.DatatransTransactionClient;
 
@@ -93,11 +92,10 @@ class DatatransPaymentProviderTest {
         assertTrue(result.successful());
         assertEquals("trx-1", result.providerTransactionId());
         assertEquals("https://redirect", result.javascriptUrl());
-        assertEquals(null, result.paymentPageUrl());
+        assertNull(result.paymentPageUrl());
         assertEquals(PaymentProviderType.DATATRANS, provider.getType());
 
-        final var captor =
-                ArgumentCaptor.forClass(DatatransInitializeTransaction.class);
+        final var captor = ArgumentCaptor.forClass(DatatransInitializeTransaction.class);
 
         verify(datatransTransactionClient).initializeTransaction(captor.capture());
         assertEquals("ref-1", captor.getValue().refno());
@@ -118,7 +116,8 @@ class DatatransPaymentProviderTest {
                                 "ref-1",
                                 null,
                                 DatatransPaymentMethod.VIS,
-                                new DatatransTransactionStatusDetail(null, null, null, null, null, null),
+                                new DatatransTransactionStatusDetail(
+                                        null, null, null, null, null, null),
                                 null));
 
         final var result = provider.getStatus("trx-1");
@@ -143,7 +142,8 @@ class DatatransPaymentProviderTest {
                                 "ref-1",
                                 null,
                                 DatatransPaymentMethod.PAY,
-                                new DatatransTransactionStatusDetail(null, null, null, null, null, null),
+                                new DatatransTransactionStatusDetail(
+                                        null, null, null, null, null, null),
                                 null));
 
         final var result = provider.getStatus("trx-1");
@@ -166,7 +166,8 @@ class DatatransPaymentProviderTest {
                                         "ref-1",
                                         null,
                                         DatatransPaymentMethod.VIS,
-                                        new DatatransTransactionStatusDetail(null, null, null, null, null, null),
+                                        new DatatransTransactionStatusDetail(
+                                                null, null, null, null, null, null),
                                         null))
                         .toString();
         final var result = provider.processWebhook(payload, Map.of());
@@ -191,7 +192,8 @@ class DatatransPaymentProviderTest {
                                         "ref-1",
                                         null,
                                         DatatransPaymentMethod.VIS,
-                                        new DatatransTransactionStatusDetail(null, null, null, null, null, null),
+                                        new DatatransTransactionStatusDetail(
+                                                null, null, null, null, null, null),
                                         null))
                         .toString();
         final var result = provider.processWebhook(payload, Map.of());
@@ -216,8 +218,7 @@ class DatatransPaymentProviderTest {
 
     @Test
     void cancel_callsDatatransCancelEndpoint() {
-        final var result =
-                provider.cancel(new PaymentCancelCommand("trx-1", "ref-1"));
+        final var result = provider.cancel(new PaymentCancelCommand("trx-1", "ref-1"));
 
         assertTrue(result.successful());
         verify(requestSpec)
