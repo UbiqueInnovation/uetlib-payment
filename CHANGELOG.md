@@ -3,9 +3,9 @@
 ## 2.0.0 - 2026-07-22
 
 - Upgrade Spring Boot 4 / Jackson 3
+- Update to `datatrans-api-client:1.0.0`
 - extend `uetlib-parent` and align with uetlib conventions
 - null-marked
-- add Sonar CI analysis
 
 ## 1.0.3 - 2026-07-10
 
