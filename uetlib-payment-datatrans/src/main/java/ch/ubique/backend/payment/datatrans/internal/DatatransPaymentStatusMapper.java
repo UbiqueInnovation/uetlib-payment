@@ -9,31 +9,46 @@ import ch.ubique.datatrans.model.transactions.DatatransTransactionStatus;
 import ch.ubique.datatrans.model.transactions.DatatransTransactionStatusDetailFail;
 import ch.ubique.datatrans.model.transactions.DatatransTransactionStatusResponse;
 
+import org.jspecify.annotations.Nullable;
+
 public class DatatransPaymentStatusMapper {
 
-    public PaymentStatusResult toStatusResult(final DatatransTransactionStatusResponse response) {
+    public PaymentStatusResult toStatusResult(
+            final @Nullable DatatransTransactionStatusResponse response) {
+        final var status = mapStatus(response == null ? null : response.status());
+        final var rawProviderStatus = response == null ? null : response.status().name();
+        final var currency = response == null ? null : response.currency().name();
+        final var paymentMethod =
+                response == null ? null : mapPaymentMethod(response.paymentMethod());
         return PaymentStatusResult.success(
-                mapStatus(response.status()),
-                response.status().name(),
-                response.currency().name(),
+                status,
+                rawProviderStatus,
+                currency,
                 null,
-                mapPaymentMethod(response.paymentMethod()),
+                paymentMethod,
                 extractFailureReason(response),
                 extractFailureMessage(response));
     }
 
-    public PaymentWebhookEvent toWebhookEvent(final DatatransTransactionStatusResponse response) {
+    public PaymentWebhookEvent toWebhookEvent(
+            final @Nullable DatatransTransactionStatusResponse response) {
+        final var status = mapStatus(response == null ? null : response.status());
+        final var rawProviderStatus = response == null ? null : response.status().name();
+        final var transactionId = response == null ? "" : response.transactionId();
+        final var currency = response == null ? null : response.currency().name();
+        final var paymentMethod =
+                response == null ? null : mapPaymentMethod(response.paymentMethod());
         return new PaymentWebhookEvent(
-                response.transactionId(),
-                mapStatus(response.status()),
-                response.status().name(),
-                mapPaymentMethod(response.paymentMethod()),
-                response.currency().name(),
+                transactionId,
+                status,
+                rawProviderStatus,
+                paymentMethod,
+                currency,
                 extractFailureReason(response),
                 extractFailureMessage(response));
     }
 
-    public TransactionStatus mapStatus(final DatatransTransactionStatus status) {
+    public TransactionStatus mapStatus(final @Nullable DatatransTransactionStatus status) {
         if (status == null) {
             return TransactionStatus.FAILED;
         }
@@ -46,9 +61,9 @@ public class DatatransPaymentStatusMapper {
         };
     }
 
-    private PaymentMethod mapPaymentMethod(final DatatransPaymentMethod paymentMethod) {
+    private PaymentMethod mapPaymentMethod(final @Nullable DatatransPaymentMethod paymentMethod) {
         if (paymentMethod == null) {
-            return null;
+            return PaymentMethod.UNKNOWN;
         }
         return switch (paymentMethod) {
             case ECA -> PaymentMethod.MASTERCARD;
@@ -63,24 +78,26 @@ public class DatatransPaymentStatusMapper {
         };
     }
 
-    private String extractFailureReason(final DatatransTransactionStatusResponse response) {
+    private @Nullable String extractFailureReason(
+            final @Nullable DatatransTransactionStatusResponse response) {
         final var failDetail = extractFailDetail(response);
-        if (failDetail == null) {
+        if (failDetail == null || failDetail.reason() == null) {
             return null;
         }
         return failDetail.reason().name();
     }
 
-    private String extractFailureMessage(final DatatransTransactionStatusResponse response) {
+    private @Nullable String extractFailureMessage(
+            final @Nullable DatatransTransactionStatusResponse response) {
         final var failDetail = extractFailDetail(response);
-        if (failDetail == null || failDetail.fail() == null || failDetail.fail().isBlank()) {
+        if (failDetail == null || failDetail.message() == null || failDetail.message().isBlank()) {
             return null;
         }
-        return failDetail.fail();
+        return failDetail.message();
     }
 
-    private DatatransTransactionStatusDetailFail extractFailDetail(
-            final DatatransTransactionStatusResponse response) {
+    private @Nullable DatatransTransactionStatusDetailFail extractFailDetail(
+            final @Nullable DatatransTransactionStatusResponse response) {
         if (response == null) {
             return null;
         }

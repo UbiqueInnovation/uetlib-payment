@@ -1,8 +1,6 @@
 package ch.ubique.backend.payment.datatrans;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -18,20 +16,21 @@ import ch.ubique.backend.payment.command.PaymentCancelCommand;
 import ch.ubique.backend.payment.command.PaymentCaptureCommand;
 import ch.ubique.backend.payment.command.PaymentInitCommand;
 import ch.ubique.backend.payment.model.PaymentPayer;
-import ch.ubique.backend.payment.result.PaymentOperationResult;
 import ch.ubique.datatrans.model.transactions.*;
 import ch.ubique.datatrans.service.DatatransTransactionClient;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
+
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -40,33 +39,31 @@ import java.util.Map;
 class DatatransPaymentProviderTest {
 
     @Mock private DatatransTransactionClient datatransTransactionClient;
-    private RestClient restClient;
+    @Mock private RestClient restClient;
     private RestClient.RequestBodyUriSpec requestSpec;
 
     private DatatransPaymentProvider provider;
 
     @BeforeEach
     void setUp() {
-        restClient = mock(RestClient.class);
-        requestSpec =
-                mock(RestClient.RequestBodyUriSpec.class, org.mockito.Mockito.RETURNS_DEEP_STUBS);
-        org.mockito.Mockito.lenient().when(restClient.post()).thenReturn(requestSpec);
-        org.mockito.Mockito.lenient()
+        requestSpec = mock(RestClient.RequestBodyUriSpec.class, Mockito.RETURNS_DEEP_STUBS);
+        Mockito.lenient().when(restClient.post()).thenReturn(requestSpec);
+        Mockito.lenient()
                 .when(requestSpec.uri(anyString(), any(Object[].class)))
                 .thenReturn(requestSpec);
-        org.mockito.Mockito.lenient()
+        Mockito.lenient()
                 .when(requestSpec.header(anyString(), any(String[].class)))
                 .thenReturn(requestSpec);
-        org.mockito.Mockito.lenient().when(requestSpec.contentType(any())).thenReturn(requestSpec);
-        org.mockito.Mockito.lenient().when(requestSpec.body(any())).thenReturn(requestSpec);
-        org.mockito.Mockito.lenient()
+        Mockito.lenient().when(requestSpec.contentType(any())).thenReturn(requestSpec);
+        Mockito.lenient().when(requestSpec.body(any())).thenReturn(requestSpec);
+        Mockito.lenient()
                 .when(requestSpec.retrieve().toBodilessEntity())
                 .thenReturn(ResponseEntity.ok().build());
         provider =
                 new DatatransPaymentProvider(
                         datatransTransactionClient,
                         restClient,
-                        new ObjectMapper(),
+                        JsonMapper.shared(),
                         "https://example.com/webhook",
                         "https://api.sandbox.datatrans.com",
                         "merchant",
@@ -95,15 +92,14 @@ class DatatransPaymentProviderTest {
         assertTrue(result.successful());
         assertEquals("trx-1", result.providerTransactionId());
         assertEquals("https://redirect", result.javascriptUrl());
-        assertEquals(null, result.paymentPageUrl());
+        assertNull(result.paymentPageUrl());
         assertEquals(PaymentProviderType.DATATRANS, provider.getType());
 
-        final ArgumentCaptor<DatatransInitializeTransaction> captor =
-                ArgumentCaptor.forClass(DatatransInitializeTransaction.class);
+        final var captor = ArgumentCaptor.forClass(DatatransInitializeTransaction.class);
 
         verify(datatransTransactionClient).initializeTransaction(captor.capture());
         assertEquals("ref-1", captor.getValue().refno());
-        assertEquals(Integer.valueOf(1130), captor.getValue().amount());
+        assertEquals(Long.valueOf(1130), captor.getValue().amount());
         assertEquals(DatatransCurrency.CHF, captor.getValue().currency());
     }
 
@@ -120,7 +116,8 @@ class DatatransPaymentProviderTest {
                                 "ref-1",
                                 null,
                                 DatatransPaymentMethod.VIS,
-                                null,
+                                new DatatransTransactionStatusDetail(
+                                        null, null, null, null, null, null),
                                 null));
 
         final var result = provider.getStatus("trx-1");
@@ -145,7 +142,8 @@ class DatatransPaymentProviderTest {
                                 "ref-1",
                                 null,
                                 DatatransPaymentMethod.PAY,
-                                null,
+                                new DatatransTransactionStatusDetail(
+                                        null, null, null, null, null, null),
                                 null));
 
         final var result = provider.getStatus("trx-1");
@@ -168,12 +166,14 @@ class DatatransPaymentProviderTest {
                                         "ref-1",
                                         null,
                                         DatatransPaymentMethod.VIS,
-                                        null,
+                                        new DatatransTransactionStatusDetail(
+                                                null, null, null, null, null, null),
                                         null))
                         .toString();
         final var result = provider.processWebhook(payload, Map.of());
 
         assertTrue(result.successful());
+        assertNotNull(result.event());
         assertEquals("trx-1", result.event().providerTransactionId());
         assertEquals(TransactionStatus.COMPLETED, result.event().paymentStatus());
     }
@@ -192,7 +192,8 @@ class DatatransPaymentProviderTest {
                                         "ref-1",
                                         null,
                                         DatatransPaymentMethod.VIS,
-                                        null,
+                                        new DatatransTransactionStatusDetail(
+                                                null, null, null, null, null, null),
                                         null))
                         .toString();
         final var result = provider.processWebhook(payload, Map.of());
@@ -202,7 +203,7 @@ class DatatransPaymentProviderTest {
 
     @Test
     void capture_callsDatatransSettleEndpoint() {
-        final PaymentOperationResult result =
+        final var result =
                 provider.capture(
                         new PaymentCaptureCommand(
                                 "trx-1", "ref-1", new BigDecimal("11.30"), PaymentCurrency.CHF));
@@ -212,13 +213,12 @@ class DatatransPaymentProviderTest {
                 .uri(
                         "https://api.sandbox.datatrans.com/v1/transactions/{transactionId}/settle",
                         "trx-1");
-        verify(requestSpec).body(Map.of("refno", "ref-1", "amount", 1130, "currency", "CHF"));
+        verify(requestSpec).body(Map.of("refno", "ref-1", "amount", 1130L, "currency", "CHF"));
     }
 
     @Test
     void cancel_callsDatatransCancelEndpoint() {
-        final PaymentOperationResult result =
-                provider.cancel(new PaymentCancelCommand("trx-1", "ref-1"));
+        final var result = provider.cancel(new PaymentCancelCommand("trx-1", "ref-1"));
 
         assertTrue(result.successful());
         verify(requestSpec)

@@ -2,10 +2,7 @@ package ch.ubique.backend.payment.postfinance;
 
 import ch.postfinancecheckout.sdk.ApiClient;
 import ch.postfinancecheckout.sdk.ApiException;
-import ch.postfinancecheckout.sdk.model.Transaction;
-import ch.postfinancecheckout.sdk.model.TransactionCompletion;
 import ch.postfinancecheckout.sdk.model.TransactionState;
-import ch.postfinancecheckout.sdk.model.TransactionVoid;
 import ch.postfinancecheckout.sdk.service.TransactionsService;
 import ch.postfinancecheckout.sdk.service.WebhookEncryptionKeysService;
 import ch.ubique.backend.payment.PaymentFailureCode;
@@ -15,6 +12,7 @@ import ch.ubique.backend.payment.TransactionStatus;
 import ch.ubique.backend.payment.command.PaymentCancelCommand;
 import ch.ubique.backend.payment.command.PaymentCaptureCommand;
 import ch.ubique.backend.payment.command.PaymentInitCommand;
+import ch.ubique.backend.payment.model.PaymentWebhookEvent;
 import ch.ubique.backend.payment.postfinance.internal.PostfinanceAuthKeyValidator;
 import ch.ubique.backend.payment.postfinance.internal.PostfinanceOperationsClient;
 import ch.ubique.backend.payment.postfinance.internal.PostfinanceStatusMapper;
@@ -25,12 +23,13 @@ import ch.ubique.backend.payment.result.PaymentOperationResult;
 import ch.ubique.backend.payment.result.PaymentStatusResult;
 import ch.ubique.backend.payment.result.PaymentWebhookResult;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.Map;
 
@@ -67,6 +66,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
                 HttpClients.createDefault());
     }
 
+    @SuppressWarnings("java:S107")
     public PostfinancePaymentProvider(
             final ObjectMapper objectMapper,
             final long spaceId,
@@ -108,10 +108,9 @@ public class PostfinancePaymentProvider implements PaymentProvider {
         final var transactionCreate = transactionFactory.create(command);
 
         try {
-            final Transaction created =
-                    service.postPaymentTransactions(spaceId, transactionCreate, null);
-            final Long transactionId = created.getId();
-            final TransactionStatus status = statusMapper.getRequiredTransactionStatus(created);
+            final var created = service.postPaymentTransactions(spaceId, transactionCreate, null);
+            final var transactionId = created.getId();
+            final var status = statusMapper.getRequiredTransactionStatus(created);
             if (transactionId == null || status == null) {
                 logger.error(
                         "PostFinance returned an incomplete transaction for reference {}",
@@ -121,9 +120,9 @@ public class PostfinancePaymentProvider implements PaymentProvider {
                         "PostFinance returned an incomplete transaction");
             }
 
-            final String jsUrl =
+            final var jsUrl =
                     service.getPaymentTransactionsIdLightboxJavascriptUrl(transactionId, spaceId);
-            final String paymentPageUrl =
+            final var paymentPageUrl =
                     service.getPaymentTransactionsIdPaymentPageUrl(transactionId, spaceId);
 
             return PaymentInitResult.success(
@@ -150,9 +149,8 @@ public class PostfinancePaymentProvider implements PaymentProvider {
     public PaymentStatusResult getStatus(final String providerTransactionId) {
         final var service = createTransactionsService();
         try {
-            final Long postfinanceId = Long.valueOf(providerTransactionId);
-            final Transaction transaction =
-                    service.getPaymentTransactionsId(postfinanceId, spaceId, null);
+            final var postfinanceId = Long.valueOf(providerTransactionId);
+            final var transaction = service.getPaymentTransactionsId(postfinanceId, spaceId, null);
             final var result = statusMapper.toStatusResult(transaction);
             if (!result.successful()) {
                 logger.error(
@@ -182,7 +180,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
 
     @Override
     public PaymentOperationResult capture(final PaymentCaptureCommand command) {
-        final Long transactionId =
+        final var transactionId =
                 operationsClient.parseProviderTransactionId(command.providerTransactionId());
         if (transactionId == null) {
             return PaymentOperationResult.failure(
@@ -191,7 +189,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
         }
 
         try {
-            final TransactionCompletion completion =
+            final var completion =
                     operationsClient.capture(createTransactionsService(), transactionId, command);
             if (!statusMapper.isCaptureSuccessful(completion)) {
                 logger.error(
@@ -216,7 +214,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
 
     @Override
     public PaymentOperationResult cancel(final PaymentCancelCommand command) {
-        final Long transactionId =
+        final var transactionId =
                 operationsClient.parseProviderTransactionId(command.providerTransactionId());
         if (transactionId == null) {
             return PaymentOperationResult.failure(
@@ -225,7 +223,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
         }
 
         try {
-            final TransactionVoid transactionVoid =
+            final var transactionVoid =
                     operationsClient.cancel(createTransactionsService(), transactionId);
             if (!statusMapper.isCancelSuccessful(transactionVoid)) {
                 logger.error(
@@ -250,8 +248,8 @@ public class PostfinancePaymentProvider implements PaymentProvider {
 
     @Override
     public PaymentWebhookResult processWebhook(
-            final String rawPayload, final Map<String, String> headers) {
-        final String signatureHeader = headers != null ? headers.get("x-signature") : null;
+            final String rawPayload, final @Nullable Map<String, String> headers) {
+        final var signatureHeader = headers != null ? headers.get("x-signature") : null;
         if (signatureValidationEnabled && !isSignatureValid(rawPayload, signatureHeader)) {
             logger.info("Rejected PostFinance webhook due to invalid or missing signature");
             return PaymentWebhookResult.failure(
@@ -260,13 +258,18 @@ public class PostfinancePaymentProvider implements PaymentProvider {
         }
 
         final var webhookPayload = webhookParser.parse(rawPayload);
+        if (webhookPayload == null) {
+            return PaymentWebhookResult.failure(
+                    PaymentFailureCode.INVALID_PROVIDER_RESPONSE,
+                    "Invalid PostFinance webhook payload");
+        }
         final var payloadValidation = webhookParser.validatePayload(webhookPayload);
         if (payloadValidation != null) {
             return payloadValidation;
         }
 
-        final TransactionStatus transactionStatus = resolveWebhookTransactionStatus(webhookPayload);
-        if (transactionStatus == null) {
+        final var transactionStatus = resolveWebhookTransactionStatus(webhookPayload);
+        if (transactionStatus == null || webhookPayload.entityId() == null) {
             logger.info(
                     "Unable to resolve PostFinance transaction state for entityId {}",
                     webhookPayload.entityId());
@@ -276,7 +279,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
         }
 
         return PaymentWebhookResult.success(
-                new ch.ubique.backend.payment.model.PaymentWebhookEvent(
+                new PaymentWebhookEvent(
                         webhookPayload.entityId().toString(),
                         transactionStatus,
                         webhookPayload.state(),
@@ -286,7 +289,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
                         null));
     }
 
-    private boolean isSignatureValid(final String payload, final String signatureHeader) {
+    private boolean isSignatureValid(final String payload, final @Nullable String signatureHeader) {
         if (signatureHeader == null || signatureHeader.isBlank()) {
             return false;
         }
@@ -299,7 +302,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
         }
     }
 
-    private TransactionStatus resolveWebhookTransactionStatus(
+    private @Nullable TransactionStatus resolveWebhookTransactionStatus(
             final PostfinanceWebhookPayload webhookPayload) {
         if (webhookPayload.state() != null && !webhookPayload.state().isBlank()) {
             try {
@@ -310,7 +313,11 @@ public class PostfinancePaymentProvider implements PaymentProvider {
             }
         }
 
-        final PaymentStatusResult statusResult = getStatus(webhookPayload.entityId().toString());
+        if (webhookPayload.entityId() == null) {
+            return null;
+        }
+
+        final var statusResult = getStatus(webhookPayload.entityId().toString());
         if (!statusResult.successful()) {
             return null;
         }

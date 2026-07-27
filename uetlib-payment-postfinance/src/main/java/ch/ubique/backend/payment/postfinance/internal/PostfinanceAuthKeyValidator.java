@@ -1,10 +1,10 @@
 package ch.ubique.backend.payment.postfinance.internal;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.WeakKeyException;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 public final class PostfinanceAuthKeyValidator {
 
