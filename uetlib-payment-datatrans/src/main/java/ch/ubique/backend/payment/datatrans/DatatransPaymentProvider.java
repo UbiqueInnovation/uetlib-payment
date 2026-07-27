@@ -18,11 +18,14 @@ import ch.ubique.backend.payment.result.PaymentWebhookResult;
 import ch.ubique.datatrans.model.transactions.DatatransInitializeTransactionResponse;
 import ch.ubique.datatrans.service.DatatransTransactionClient;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestClient;
+
+import tools.jackson.databind.ObjectMapper;
+
+import java.util.Map;
 
 public class DatatransPaymentProvider implements PaymentProvider {
 
@@ -72,7 +75,7 @@ public class DatatransPaymentProvider implements PaymentProvider {
                     request.currency().name(),
                     command.amount(),
                     null);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error(
                     "Failed to initialize Datatrans transaction for reference {}",
                     command.reference(),
@@ -89,7 +92,7 @@ public class DatatransPaymentProvider implements PaymentProvider {
             final var response =
                     datatransTransactionClient.getTransactionStatus(providerTransactionId);
             return statusMapper.toStatusResult(response);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error(
                     "Failed to fetch Datatrans transaction status for providerTransactionId {}",
                     providerTransactionId,
@@ -102,7 +105,7 @@ public class DatatransPaymentProvider implements PaymentProvider {
 
     @Override
     public PaymentWebhookResult processWebhook(
-            final String rawPayload, final java.util.Map<String, String> headers) {
+            final String rawPayload, final @Nullable Map<String, String> headers) {
         final var result = webhookParser.parse(rawPayload);
         if (!result.successful() && !result.ignored()) {
             logger.info("Rejected Datatrans webhook");

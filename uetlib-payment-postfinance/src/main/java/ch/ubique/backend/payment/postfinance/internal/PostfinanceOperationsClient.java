@@ -8,28 +8,30 @@ import ch.postfinancecheckout.sdk.model.TransactionVoid;
 import ch.postfinancecheckout.sdk.service.TransactionsService;
 import ch.ubique.backend.payment.command.PaymentCaptureCommand;
 
+import org.jspecify.annotations.Nullable;
+
 import java.math.BigDecimal;
 import java.util.List;
 
 public class PostfinanceOperationsClient {
 
     private final long spaceId;
-    private final String productUniqueId;
+    private final @Nullable String productUniqueId;
 
-    public PostfinanceOperationsClient(final long spaceId, final String productUniqueId) {
+    public PostfinanceOperationsClient(final long spaceId, final @Nullable String productUniqueId) {
         this.spaceId = spaceId;
         this.productUniqueId = productUniqueId;
     }
 
-    public Long parseProviderTransactionId(final String providerTransactionId) {
+    public @Nullable Long parseProviderTransactionId(final String providerTransactionId) {
         try {
             return Long.valueOf(providerTransactionId);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             return null;
         }
     }
 
-    public TransactionCompletion capture(
+    public @Nullable TransactionCompletion capture(
             final TransactionsService transactionsService,
             final Long transactionId,
             final PaymentCaptureCommand command)
@@ -46,7 +48,7 @@ public class PostfinanceOperationsClient {
                 transactionId, spaceId, null);
     }
 
-    public TransactionVoid cancel(
+    public @Nullable TransactionVoid cancel(
             final TransactionsService transactionsService, final Long transactionId)
             throws ApiException {
         return transactionsService.postPaymentTransactionsIdVoidOnline(
@@ -63,7 +65,7 @@ public class PostfinanceOperationsClient {
         return lineItem;
     }
 
-    private boolean requiresPartialCompletion(final BigDecimal amount) {
+    private boolean requiresPartialCompletion(final @Nullable BigDecimal amount) {
         return amount != null && amount.signum() > 0;
     }
 }

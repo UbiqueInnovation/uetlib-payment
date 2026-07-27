@@ -12,21 +12,23 @@ import ch.ubique.backend.payment.TransactionStatus;
 import ch.ubique.backend.payment.result.PaymentStatusResult;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 
 public class PostfinanceStatusMapper {
 
-    public TransactionStatus getRequiredTransactionStatus(final Transaction transaction) {
+    public @Nullable TransactionStatus getRequiredTransactionStatus(
+            final @Nullable Transaction transaction) {
         if (transaction == null || transaction.getState() == null) {
             return null;
         }
         return mapTransactionState(transaction.getState());
     }
 
-    public PaymentStatusResult toStatusResult(final Transaction transaction) {
+    public PaymentStatusResult toStatusResult(final @Nullable Transaction transaction) {
         final var status = getRequiredTransactionStatus(transaction);
-        if (status == null) {
+        if (status == null || transaction == null || transaction.getState() == null) {
             return PaymentStatusResult.failure(
                     PaymentFailureCode.INVALID_PROVIDER_RESPONSE,
                     "PostFinance returned a transaction without state");
@@ -42,7 +44,7 @@ public class PostfinanceStatusMapper {
                 failureReason);
     }
 
-    public boolean isCaptureSuccessful(final TransactionCompletion completion) {
+    public boolean isCaptureSuccessful(final @Nullable TransactionCompletion completion) {
         if (completion == null || completion.getState() == null) {
             return false;
         }
@@ -51,7 +53,7 @@ public class PostfinanceStatusMapper {
                 || completion.getState() == TransactionCompletionState.SCHEDULED;
     }
 
-    public boolean isCancelSuccessful(final TransactionVoid transactionVoid) {
+    public boolean isCancelSuccessful(final @Nullable TransactionVoid transactionVoid) {
         if (transactionVoid == null || transactionVoid.getState() == null) {
             return false;
         }
@@ -59,7 +61,7 @@ public class PostfinanceStatusMapper {
                 || transactionVoid.getState() == TransactionVoidState.PENDING;
     }
 
-    public TransactionStatus mapTransactionState(final TransactionState state) {
+    public @Nullable TransactionStatus mapTransactionState(final @Nullable TransactionState state) {
         if (state == null) {
             return null;
         }
@@ -72,7 +74,7 @@ public class PostfinanceStatusMapper {
         };
     }
 
-    public String extractFailureReason(final Transaction transaction) {
+    public @Nullable String extractFailureReason(final Transaction transaction) {
         if (transaction.getFailureReason() == null) {
             return null;
         }
@@ -84,7 +86,8 @@ public class PostfinanceStatusMapper {
         return getPreferredLocalizedValue(transaction.getFailureReason().getName());
     }
 
-    private String getPreferredLocalizedValue(final Map<String, String> values) {
+    private @Nullable String getPreferredLocalizedValue(
+            final @Nullable Map<String, String> values) {
         if (values == null || values.isEmpty()) {
             return null;
         }
