@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1
+
+- updated actions to not run tests twice for sonar
+
 ## 2.0.0 - 2026-07-22
 
 - Upgrade Spring Boot 4 / Jackson 3
