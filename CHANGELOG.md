@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.3 - 2026-08-04
+
+### Fixed
+
+- Use only the PostFinance Lightbox URL when initializing a transaction.
+
 ## 2.0.1
 
 - updated actions to not run tests twice for sonar
