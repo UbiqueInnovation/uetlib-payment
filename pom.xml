@@ -91,16 +91,6 @@
             <name>ubique</name>
             <url>https://artifactory.ubique.ch/artifactory/ubique</url>
         </repository>
-        <repository>
-            <id>osgeo</id>
-            <name>Open Source Geospatial Foundation Repository</name>
-            <url>https://repo.osgeo.org/repository/release/</url>
-        </repository>
-        <repository>
-            <id>unidata-all</id>
-            <name>Unidata All</name>
-            <url>https://artifacts.unidata.ucar.edu/all</url>
-        </repository>
     </repositories>
 
     <scm child.scm.url.inherit.append.path="false">
