@@ -5,7 +5,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ch.postfinancecheckout.sdk.ApiException;
@@ -93,15 +95,15 @@ class PostfinancePaymentProviderTest {
         when(transactionsService.getPaymentTransactionsIdLightboxJavascriptUrl(
                         anyLong(), anyLong()))
                 .thenReturn("http://js.url");
-        when(transactionsService.getPaymentTransactionsIdPaymentPageUrl(anyLong(), anyLong()))
-                .thenReturn("http://page.url");
 
         PaymentInitResult response = postfinancePaymentProvider.initiate(command);
 
         assertEquals(true, response.successful());
         assertEquals("1", response.providerTransactionId());
         assertEquals("http://js.url", response.javascriptUrl());
-        assertEquals("http://page.url", response.paymentPageUrl());
+        assertNull(response.paymentPageUrl());
+        verify(transactionsService, never())
+                .getPaymentTransactionsIdPaymentPageUrl(anyLong(), anyLong());
         assertEquals("REG-11111111", response.providerReference());
         assertEquals(TransactionStatus.AUTHORIZED, response.status());
         TransactionCreate sent = transactionCaptor.getValue();

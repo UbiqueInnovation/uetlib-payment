@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.4 - 2026-08-04
+
+### Fixed
+
+- Use only the PostFinance Lightbox URL when initializing a transaction.
+
 ## 1.0.3 - 2026-07-10
 
 ### Added
