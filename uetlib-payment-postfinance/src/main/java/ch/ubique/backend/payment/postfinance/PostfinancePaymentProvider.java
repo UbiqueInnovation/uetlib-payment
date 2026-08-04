@@ -120,15 +120,15 @@ public class PostfinancePaymentProvider implements PaymentProvider {
                         "PostFinance returned an incomplete transaction");
             }
 
+            // Use the Lightbox integration exclusively. Requesting the Payment Page URL as a
+            // second URL for the same transaction can switch PostFinance out of Lightbox mode.
             final var jsUrl =
                     service.getPaymentTransactionsIdLightboxJavascriptUrl(transactionId, spaceId);
-            final var paymentPageUrl =
-                    service.getPaymentTransactionsIdPaymentPageUrl(transactionId, spaceId);
 
             return PaymentInitResult.success(
                     transactionId.toString(),
                     jsUrl,
-                    paymentPageUrl,
+                    null,
                     merchantReference,
                     status,
                     created.getCurrency(),
