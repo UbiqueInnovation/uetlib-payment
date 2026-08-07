@@ -1,5 +1,19 @@
 # Changelog
 
+## 2.0.4 - 2026-08-07
+
+### Improved
+
+- Validate PostFinance auth key directly on config properties with a new annotation. Gives nicer errors on startup, like:
+  ```
+  Binding to target ch.ubique.backend.payment.postfinance.PostfinancePaymentProviderProperties failed:
+  
+  Property: ch.ubique.backend.payment.postfinance.authKey
+  Value: "OuXBRclhF5Ab0E44gBb+A="
+  Origin: class path resource [application.properties] - 102:48
+  Reason: Expected a Base64-encoded key with at least 256 bits for HS256 signing.
+  ```
+
 ## 2.0.3 - 2026-08-04
 
 ### Fixed
