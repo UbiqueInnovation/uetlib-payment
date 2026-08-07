@@ -22,7 +22,7 @@ public class PostfinancePaymentProviderAutoConfiguration {
 
     @Bean
     public PostfinancePaymentProvider postfinancePaymentProvider(
-            ObjectMapper objectMapper,
+            final ObjectMapper objectMapper,
             final PostfinancePaymentProviderProperties properties,
             @Qualifier("postfinanceHttpClient") final CloseableHttpClient httpClient) {
         return new PostfinancePaymentProvider(

@@ -44,7 +44,7 @@ class PostfinancePaymentProviderTest {
 
     private static final String TEST_PRODUCT_SKU = "CHMOB-SUB";
     private static final String TEST_PRODUCT_UNIQUE_ID = "CHMOB-SUB";
-    private static final ObjectMapper jsonMapper = JsonMapper.builder().build();
+    private static final ObjectMapper jsonMapper = JsonMapper.shared();
 
     @Mock private TransactionsService transactionsService;
     private PostfinancePaymentProvider postfinancePaymentProvider;
@@ -187,7 +187,7 @@ class PostfinancePaymentProviderTest {
                                         false));
 
         assertEquals(
-                "Invalid configuration for property ch.ubique.backend.payment.postfinance.auth-key. Expected a Base64-encoded key with at least 256 bits for HS256 signing.",
+                "Invalid PostFinance auth key. Expected a Base64-encoded key with at least 256 bits for HS256 signing.",
                 exception.getMessage());
     }
 
@@ -207,7 +207,7 @@ class PostfinancePaymentProviderTest {
                                         false));
 
         assertEquals(
-                "Invalid configuration for property ch.ubique.backend.payment.postfinance.auth-key. Expected a Base64-encoded key with at least 256 bits for HS256 signing.",
+                "Invalid PostFinance auth key. Expected a Base64-encoded key with at least 256 bits for HS256 signing.",
                 exception.getMessage());
     }
 }
