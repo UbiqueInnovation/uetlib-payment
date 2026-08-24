@@ -6,6 +6,9 @@
 
 - Allow applications to force the PostFinance test or production transaction environment.
 
+- latest uetlib parent
+- version updates
+
 ## 2.0.4 - 2026-08-07
 
 ### Improved
