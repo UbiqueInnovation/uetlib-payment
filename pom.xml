@@ -7,7 +7,7 @@
     <parent>
         <groupId>ch.ubique</groupId>
         <artifactId>uetlib-parent</artifactId>
-        <version>2026.7.6</version>
+        <version>2026.8.1</version>
         <relativePath/>
     </parent>
 
@@ -17,8 +17,6 @@
     <name>uetlib-payment-parent</name>
 
     <properties>
-        <westemeyer-version-package-name>ch.ubique.backend.payment.version</westemeyer-version-package-name>
-
         <!-- Sonar & Jacoco coverage reports -->
         <sonar.projectName>uetlib-payment</sonar.projectName>
         <sonar.coverage.module>uetlib-payment-coverage</sonar.coverage.module>
