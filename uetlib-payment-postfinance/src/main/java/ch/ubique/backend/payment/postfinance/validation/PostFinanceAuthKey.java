@@ -24,10 +24,10 @@ import java.lang.annotation.Target;
 @Documented
 public @interface PostFinanceAuthKey {
 
-    String message() default "value '${validatedValue}' must be a valid Base64-encoded key with at least 256 bits for HS256 signing";
+    String message() default
+            "value '${validatedValue}' must be a valid Base64-encoded key with at least 256 bits for HS256 signing";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
 }
-

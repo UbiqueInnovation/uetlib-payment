@@ -63,6 +63,29 @@ public class PostfinancePaymentProvider implements PaymentProvider {
                 productSku,
                 productUniqueId,
                 signatureValidationEnabled,
+                PostfinanceEnvironmentSelection.USE_CONFIGURATION,
+                HttpClients.createDefault());
+    }
+
+    @SuppressWarnings("java:S107")
+    public PostfinancePaymentProvider(
+            final ObjectMapper objectMapper,
+            final long spaceId,
+            final long userId,
+            final String authKey,
+            final String productSku,
+            final String productUniqueId,
+            final boolean signatureValidationEnabled,
+            final PostfinanceEnvironmentSelection environmentSelectionStrategy) {
+        this(
+                objectMapper,
+                spaceId,
+                userId,
+                authKey,
+                productSku,
+                productUniqueId,
+                signatureValidationEnabled,
+                environmentSelectionStrategy,
                 HttpClients.createDefault());
     }
 
@@ -76,6 +99,29 @@ public class PostfinancePaymentProvider implements PaymentProvider {
             final String productUniqueId,
             final boolean signatureValidationEnabled,
             final CloseableHttpClient httpClient) {
+        this(
+                objectMapper,
+                spaceId,
+                userId,
+                authKey,
+                productSku,
+                productUniqueId,
+                signatureValidationEnabled,
+                PostfinanceEnvironmentSelection.USE_CONFIGURATION,
+                httpClient);
+    }
+
+    @SuppressWarnings("java:S107")
+    public PostfinancePaymentProvider(
+            final ObjectMapper objectMapper,
+            final long spaceId,
+            final long userId,
+            final String authKey,
+            final String productSku,
+            final String productUniqueId,
+            final boolean signatureValidationEnabled,
+            final PostfinanceEnvironmentSelection environmentSelectionStrategy,
+            final CloseableHttpClient httpClient) {
         PostfinanceAuthKeyValidator.validate(authKey);
         this.spaceId = spaceId;
         this.userId = userId;
@@ -83,7 +129,9 @@ public class PostfinancePaymentProvider implements PaymentProvider {
         this.httpClient = httpClient;
         this.signatureValidationEnabled = signatureValidationEnabled;
         this.operationsClient = new PostfinanceOperationsClient(spaceId, productUniqueId);
-        this.transactionFactory = new PostfinanceTransactionFactory(productSku, productUniqueId);
+        this.transactionFactory =
+                new PostfinanceTransactionFactory(
+                        productSku, productUniqueId, environmentSelectionStrategy);
         this.statusMapper = new PostfinanceStatusMapper();
         this.webhookParser = new PostfinanceWebhookParser(objectMapper, spaceId);
     }

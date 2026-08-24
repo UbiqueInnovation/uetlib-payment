@@ -15,6 +15,7 @@ import ch.postfinancecheckout.sdk.model.Transaction;
 import ch.postfinancecheckout.sdk.model.TransactionCompletion;
 import ch.postfinancecheckout.sdk.model.TransactionCompletionState;
 import ch.postfinancecheckout.sdk.model.TransactionCreate;
+import ch.postfinancecheckout.sdk.model.TransactionEnvironmentSelectionStrategy;
 import ch.postfinancecheckout.sdk.model.TransactionState;
 import ch.postfinancecheckout.sdk.model.TransactionVoid;
 import ch.postfinancecheckout.sdk.model.TransactionVoidState;
@@ -62,7 +63,8 @@ class PostfinancePaymentProviderTest {
                                 "a".repeat(64),
                                 TEST_PRODUCT_SKU,
                                 TEST_PRODUCT_UNIQUE_ID,
-                                false));
+                                false,
+                                PostfinanceEnvironmentSelection.FORCE_TEST));
         doReturn(transactionsService).when(postfinancePaymentProvider).createTransactionsService();
     }
 
@@ -118,6 +120,9 @@ class PostfinancePaymentProviderTest {
         assertEquals("CH", sent.getBillingAddress().getCountry());
         assertEquals(TEST_PRODUCT_UNIQUE_ID, sent.getLineItems().getFirst().getUniqueId());
         assertEquals(TEST_PRODUCT_SKU, sent.getLineItems().getFirst().getSku());
+        assertEquals(
+                TransactionEnvironmentSelectionStrategy.FORCE_TEST_ENVIRONMENT,
+                sent.getEnvironmentSelectionStrategy());
     }
 
     @Test
