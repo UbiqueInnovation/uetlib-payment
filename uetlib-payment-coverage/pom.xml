@@ -15,8 +15,6 @@
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
-
-        <westemeyer-version-package-name>ch.ubique.backend.payment.version</westemeyer-version-package-name>
     </properties>
 
     <dependencies>
