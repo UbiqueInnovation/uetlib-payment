@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.5 - 2026-08-24
+
+- latest uetlib parent
+- version updates
+
 ## 2.0.4 - 2026-08-07
 
 ### Improved
