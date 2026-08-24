@@ -5,21 +5,39 @@ import ch.postfinancecheckout.sdk.model.LineItemCreate;
 import ch.postfinancecheckout.sdk.model.LineItemType;
 import ch.postfinancecheckout.sdk.model.TransactionCompletionBehavior;
 import ch.postfinancecheckout.sdk.model.TransactionCreate;
+import ch.postfinancecheckout.sdk.model.TransactionEnvironmentSelectionStrategy;
 import ch.ubique.backend.payment.PaymentCaptureMode;
 import ch.ubique.backend.payment.command.PaymentInitCommand;
 import ch.ubique.backend.payment.model.PaymentBillingAddress;
 import ch.ubique.backend.payment.model.PaymentPayer;
+import ch.ubique.backend.payment.postfinance.PostfinanceEnvironmentSelection;
 
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Objects;
 
 public class PostfinanceTransactionFactory {
 
     private final String productSku;
     private final String productUniqueId;
+    private final TransactionEnvironmentSelectionStrategy environmentSelectionStrategy;
 
     public PostfinanceTransactionFactory(final String productSku, final String productUniqueId) {
+        this(
+                productSku,
+                productUniqueId,
+                PostfinanceEnvironmentSelection.USE_CONFIGURATION);
+    }
+
+    public PostfinanceTransactionFactory(
+            final String productSku,
+            final String productUniqueId,
+            final PostfinanceEnvironmentSelection environmentSelectionStrategy) {
         this.productSku = productSku;
         this.productUniqueId = productUniqueId;
+        this.environmentSelectionStrategy =
+                toSdkEnvironmentSelectionStrategy(
+                        Objects.requireNonNull(environmentSelectionStrategy));
     }
 
     public TransactionCreate create(final PaymentInitCommand command) {
@@ -28,6 +46,7 @@ public class PostfinanceTransactionFactory {
         transaction.setCurrency(command.currency().name());
         transaction.setMerchantReference(command.reference());
         transaction.setCompletionBehavior(resolveCompletionBehavior(command.captureMode()));
+        transaction.setEnvironmentSelectionStrategy(environmentSelectionStrategy);
         if (command.successUrl() != null) {
             transaction.setSuccessUrl(command.successUrl());
         }
@@ -43,6 +62,18 @@ public class PostfinanceTransactionFactory {
         }
         transaction.setLineItems(java.util.List.of(createLineItem(command)));
         return transaction;
+    }
+
+    private TransactionEnvironmentSelectionStrategy toSdkEnvironmentSelectionStrategy(
+            PostfinanceEnvironmentSelection strategy) {
+        return switch (strategy) {
+            case USE_CONFIGURATION ->
+                    TransactionEnvironmentSelectionStrategy.USE_CONFIGURATION;
+            case FORCE_TEST ->
+                    TransactionEnvironmentSelectionStrategy.FORCE_TEST_ENVIRONMENT;
+            case FORCE_PRODUCTION ->
+                    TransactionEnvironmentSelectionStrategy.FORCE_PRODUCTION_ENVIRONMENT;
+        };
     }
 
     private TransactionCompletionBehavior resolveCompletionBehavior(

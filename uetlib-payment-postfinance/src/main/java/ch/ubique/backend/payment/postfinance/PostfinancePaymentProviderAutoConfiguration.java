@@ -33,6 +33,7 @@ public class PostfinancePaymentProviderAutoConfiguration {
                 properties.productSku(),
                 properties.productUniqueId(),
                 properties.signatureValidationEnabled(),
+                properties.environmentSelectionStrategy(),
                 httpClient);
     }
 }

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.5 - 2026-08-24
+
+### Added
+
+- Allow applications to force the PostFinance test or production transaction environment.
+
 ## 1.0.4 - 2026-08-04
 
 ### Fixed
