@@ -36,6 +36,7 @@ import java.util.Map;
 public class PostfinancePaymentProvider implements PaymentProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(PostfinancePaymentProvider.class);
+    private static final String SIGNATURE_HEADER = "x-signature";
 
     private final long spaceId;
     private final long userId;
@@ -297,7 +298,7 @@ public class PostfinancePaymentProvider implements PaymentProvider {
     @Override
     public PaymentWebhookResult processWebhook(
             final String rawPayload, final @Nullable Map<String, String> headers) {
-        final var signatureHeader = headers != null ? headers.get("x-signature") : null;
+        final var signatureHeader = findHeader(headers, SIGNATURE_HEADER);
         if (signatureValidationEnabled && !isSignatureValid(rawPayload, signatureHeader)) {
             logger.info("Rejected PostFinance webhook due to invalid or missing signature");
             return PaymentWebhookResult.failure(
@@ -335,6 +336,18 @@ public class PostfinancePaymentProvider implements PaymentProvider {
                         null,
                         null,
                         null));
+    }
+
+    private static @Nullable String findHeader(
+            final @Nullable Map<String, String> headers, final String headerName) {
+        if (headers == null) {
+            return null;
+        }
+        return headers.entrySet().stream()
+                .filter(entry -> headerName.equalsIgnoreCase(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .findFirst()
+                .orElse(null);
     }
 
     private boolean isSignatureValid(final String payload, final @Nullable String signatureHeader) {
