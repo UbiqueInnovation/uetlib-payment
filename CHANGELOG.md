@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.8 - 2026-08-25
+
+### Fixed
+
+- Treat PostFinance webhook header names case-insensitively when validating signatures.
+
 ## 2.0.7 - 2026-08-24
 
 - latest uetlib parent
