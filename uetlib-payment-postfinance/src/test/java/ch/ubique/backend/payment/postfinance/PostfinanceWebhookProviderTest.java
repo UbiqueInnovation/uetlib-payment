@@ -123,4 +123,35 @@ class PostfinanceWebhookProviderTest {
         assertFalse(result.successful());
         assertEquals(PaymentFailureCode.INVALID_PROVIDER_REFERENCE, result.failure().code());
     }
+
+    @Test
+    void processWebhook_signatureHeaderLookupIsCaseInsensitive() throws ApiException {
+        String payload =
+                """
+                {"entityId":123,"listenerEntityTechnicalName":"Transaction","spaceId":34121,"state":"COMPLETED"}
+                """;
+        PostfinancePaymentProvider validatingProvider =
+                spy(
+                        new PostfinancePaymentProvider(
+                                new ObjectMapper(),
+                                34121L,
+                                1L,
+                                "a".repeat(64),
+                                TEST_PRODUCT_SKU,
+                                TEST_PRODUCT_UNIQUE_ID,
+                                true));
+        WebhookEncryptionKeysService encryptionKeysService =
+                mock(WebhookEncryptionKeysService.class);
+        doReturn(encryptionKeysService)
+                .when(validatingProvider)
+                .createWebhookEncryptionKeysService();
+        when(encryptionKeysService.isContentValid("valid-signature", payload)).thenReturn(true);
+
+        var result =
+                validatingProvider.processWebhook(
+                        payload, Map.of("X-Signature", "valid-signature"));
+
+        assertTrue(result.successful());
+        assertEquals(TransactionStatus.COMPLETED, result.event().paymentStatus());
+    }
 }
