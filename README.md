@@ -47,3 +47,37 @@ The shared API currently covers:
   - The provider completes or captures the payment during the normal checkout flow.
 - `MANUAL`
   - The provider only authorizes first, and the backend completes or captures later.
+
+## Datatrans API client
+
+The complete client model and service formerly maintained in
+[`datatrans-api-client`](https://github.com/UbiqueInnovation/datatrans-api-client)
+are included in `uetlib-payment-datatrans`, alongside the payment-provider adapter.
+There is no dependency on the old client artifacts. The planned first public release is:
+
+```xml
+<dependency>
+    <groupId>ch.ubique.uetlib</groupId>
+    <artifactId>uetlib-payment-datatrans</artifactId>
+    <version>3.0.0</version>
+</dependency>
+```
+
+Client types live under `ch.ubique.uetlib.payment.datatrans.client.model` and
+`ch.ubique.uetlib.payment.datatrans.client.service`. For direct client use, configure
+`spring.cloud.openfeign.client.config.datatrans-transactions.url`,
+`ch.ubique.datatrans.merchant-id` and `ch.ubique.datatrans.password` as before.
+
+For the payment adapter, set `ch.ubique.backend.payment.datatrans.base-url`,
+`webhook-url`, `merchant-id` and `password` under that same prefix. Setting `base-url`
+enables the provider; applications must supply their `RestClient` and Jackson
+`ObjectMapper` beans. The adapter supplies the Feign URL and credential aliases.
+Standalone client use does not create a payment provider.
+
+The [migration command](CHANGELOG.md#migration) updates old model/service dependencies,
+Java packages and class-name resources. Review the result and test your application.
+Existing property names remain unchanged.
+
+## License
+
+Except where otherwise noted, original uetlib code is licensed under the [Apache License 2.0](LICENSE). Third-party files retain their original license terms; see [NOTICE](NOTICE) and any third-party notices in this repository.
