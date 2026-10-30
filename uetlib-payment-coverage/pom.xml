@@ -13,6 +13,9 @@
     <artifactId>uetlib-payment-coverage</artifactId>
     <name>uetlib-payment-coverage</name>
 
+    <description>Payment abstractions and provider integrations.</description>
+    <url>https://github.com/UbiqueInnovation/uetlib-payment</url>
+
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>

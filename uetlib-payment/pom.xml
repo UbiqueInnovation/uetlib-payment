@@ -13,8 +13,11 @@
     <artifactId>uetlib-payment</artifactId>
     <name>uetlib-payment</name>
 
+    <description>Payment abstractions and provider integrations.</description>
+    <url>https://github.com/UbiqueInnovation/uetlib-payment</url>
+
     <properties>
-        <artifact-package-name>ch.ubique.backend.payment</artifact-package-name>
+        <artifact-package-name>ch.ubique.uetlib.payment</artifact-package-name>
     </properties>
 
     <dependencies>

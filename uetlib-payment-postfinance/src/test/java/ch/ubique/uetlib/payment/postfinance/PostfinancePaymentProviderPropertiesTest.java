@@ -1,0 +1,94 @@
+package ch.ubique.uetlib.payment.postfinance;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+
+class PostfinancePaymentProviderPropertiesTest {
+
+    private static final String PREFIX = "ch.ubique.backend.payment.postfinance";
+    private static final Validator validator =
+            Validation.buildDefaultValidatorFactory().getValidator();
+
+    @Test
+    void validate_validAuthKey_hasNoViolations() {
+        final var properties =
+                new PostfinancePaymentProviderProperties(
+                        1L, 1L, "a".repeat(64), "sku", "uniqueId", true, false);
+
+        final var violations = validator.validate(properties);
+
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    void validate_invalidAuthKey_hasViolationOnAuthKey() {
+        final var properties =
+                new PostfinancePaymentProviderProperties(
+                        1L, 1L, "VE9ETw==", "sku", "uniqueId", true, false);
+
+        final var violations = validator.validate(properties);
+
+        assertFalse(violations.isEmpty());
+        final var violation =
+                violations.stream()
+                        .filter(v -> "authKey".equals(v.getPropertyPath().toString()))
+                        .findFirst()
+                        .orElseThrow();
+        assertEquals(
+                "Expected a Base64-encoded key with at least 256 bits for HS256 signing.",
+                violation.getMessage());
+    }
+
+    @Test
+    void environmentSelectionStrategyDefaultsToUseConfiguration() {
+        PostfinancePaymentProviderProperties properties = bind(Map.of());
+
+        assertEquals(
+                PostfinanceEnvironmentSelection.USE_CONFIGURATION,
+                properties.environmentSelectionStrategy());
+    }
+
+    @Test
+    void environmentSelectionStrategyCanForceTestEnvironment() {
+        PostfinancePaymentProviderProperties properties =
+                bind(Map.of("environment-selection-strategy", "FORCE_TEST"));
+
+        assertEquals(
+                PostfinanceEnvironmentSelection.FORCE_TEST,
+                properties.environmentSelectionStrategy());
+    }
+
+    @Test
+    void environmentSelectionStrategyCanForceProductionEnvironment() {
+        PostfinancePaymentProviderProperties properties =
+                bind(Map.of("environment-selection-strategy", "FORCE_PRODUCTION"));
+
+        assertEquals(
+                PostfinanceEnvironmentSelection.FORCE_PRODUCTION,
+                properties.environmentSelectionStrategy());
+    }
+
+    private PostfinancePaymentProviderProperties bind(Map<String, Object> overrides) {
+        Map<String, Object> values = new HashMap<>();
+        values.put(PREFIX + ".space-id", "1");
+        values.put(PREFIX + ".user-id", "1");
+        values.put(PREFIX + ".auth-key", "a".repeat(64));
+        values.put(PREFIX + ".product-sku", "sku");
+        values.put(PREFIX + ".product-unique-id", "unique-id");
+        overrides.forEach((key, value) -> values.put(PREFIX + "." + key, value));
+
+        return new Binder(new MapConfigurationPropertySource(values))
+                .bind(PREFIX, Bindable.of(PostfinancePaymentProviderProperties.class))
+                .orElseThrow(IllegalStateException::new);
+    }
+}
