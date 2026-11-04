@@ -63,8 +63,8 @@ There is no dependency on the old client artifacts. The planned first public rel
 </dependency>
 ```
 
-Client types live under `ch.ubique.uetlib.payment.datatrans.client.model` and
-`ch.ubique.uetlib.payment.datatrans.client.service`. For direct client use, configure
+Client types live under `ch.uetlib.payment.datatrans.client.model` and
+`ch.uetlib.payment.datatrans.client.service`. For direct client use, configure
 `spring.cloud.openfeign.client.config.datatrans-transactions.url`,
 `ch.ubique.datatrans.merchant-id` and `ch.ubique.datatrans.password` as before.
 
