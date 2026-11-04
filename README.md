@@ -57,7 +57,7 @@ There is no dependency on the old client artifacts. The planned first public rel
 
 ```xml
 <dependency>
-    <groupId>ch.ubique.uetlib</groupId>
+    <groupId>ch.uetlib</groupId>
     <artifactId>uetlib-payment-datatrans</artifactId>
     <version>3.0.0</version>
 </dependency>
