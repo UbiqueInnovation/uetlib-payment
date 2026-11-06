@@ -9,8 +9,10 @@ public class DatatransFeignClientConfiguration {
 
     @Bean
     public BasicAuthRequestInterceptor requestInterceptor(
-            @Value("${ch.ubique.datatrans.merchant-id}") final String datatransMerchantId,
-            @Value("${ch.ubique.datatrans.password}") final String datatransPassword) {
+            @Value("${ch.uetlib.payment.datatrans.client.merchant-id}")
+                    final String datatransMerchantId,
+            @Value("${ch.uetlib.payment.datatrans.client.password}")
+                    final String datatransPassword) {
         return new BasicAuthRequestInterceptor(datatransMerchantId, datatransPassword);
     }
 }

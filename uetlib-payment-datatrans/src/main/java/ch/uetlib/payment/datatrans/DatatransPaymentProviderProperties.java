@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties(prefix = "ch.ubique.backend.payment.datatrans")
+@ConfigurationProperties(prefix = "ch.uetlib.payment.datatrans")
 public record DatatransPaymentProviderProperties(
         @NotBlank String webhookUrl,
         @NotBlank String baseUrl,
