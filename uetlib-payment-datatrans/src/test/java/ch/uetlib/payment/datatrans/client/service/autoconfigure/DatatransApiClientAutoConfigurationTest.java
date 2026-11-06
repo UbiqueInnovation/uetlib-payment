@@ -28,8 +28,8 @@ class DatatransApiClientAutoConfigurationTest {
     void supportsStandaloneClientWithExistingProperties() {
         runner.withPropertyValues(
                         "spring.cloud.openfeign.client.config.datatrans-transactions.url=https://example.invalid",
-                        "ch.ubique.datatrans.merchant-id=test-merchant",
-                        "ch.ubique.datatrans.password=test-password")
+                        "ch.uetlib.payment.datatrans.client.merchant-id=test-merchant",
+                        "ch.uetlib.payment.datatrans.client.password=test-password")
                 .run(
                         context -> {
                             assertThat(context)
@@ -43,10 +43,10 @@ class DatatransApiClientAutoConfigurationTest {
     @Test
     void registersClientOnceAlongsidePaymentProvider() {
         runner.withPropertyValues(
-                        "ch.ubique.backend.payment.datatrans.base-url=https://example.invalid",
-                        "ch.ubique.backend.payment.datatrans.webhook-url=https://example.invalid/webhook",
-                        "ch.ubique.backend.payment.datatrans.merchant-id=test-merchant",
-                        "ch.ubique.backend.payment.datatrans.password=test-password")
+                        "ch.uetlib.payment.datatrans.base-url=https://example.invalid",
+                        "ch.uetlib.payment.datatrans.webhook-url=https://example.invalid/webhook",
+                        "ch.uetlib.payment.datatrans.merchant-id=test-merchant",
+                        "ch.uetlib.payment.datatrans.password=test-password")
                 .withBean(RestClient.class, RestClient::create)
                 .withBean(
                         tools.jackson.databind.ObjectMapper.class,

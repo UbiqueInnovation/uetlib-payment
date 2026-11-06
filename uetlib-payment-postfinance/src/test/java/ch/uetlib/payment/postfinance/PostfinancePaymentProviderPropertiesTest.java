@@ -17,7 +17,7 @@ import java.util.Map;
 
 class PostfinancePaymentProviderPropertiesTest {
 
-    private static final String PREFIX = "ch.ubique.backend.payment.postfinance";
+    private static final String PREFIX = "ch.uetlib.payment.postfinance";
     private static final Validator validator =
             Validation.buildDefaultValidatorFactory().getValidator();
 

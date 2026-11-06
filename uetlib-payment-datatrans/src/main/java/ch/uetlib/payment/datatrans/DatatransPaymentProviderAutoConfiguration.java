@@ -14,7 +14,7 @@ import org.springframework.web.client.RestClient;
 import tools.jackson.databind.ObjectMapper;
 
 @AutoConfiguration(after = DatatransApiClientAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "ch.ubique.backend.payment.datatrans", name = "base-url")
+@ConditionalOnProperty(prefix = "ch.uetlib.payment.datatrans", name = "base-url")
 @ConditionalOnClass(EnableFeignClients.class)
 @EnableConfigurationProperties(DatatransPaymentProviderProperties.class)
 @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")

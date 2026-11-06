@@ -11,7 +11,7 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
-@ConfigurationProperties(prefix = "ch.ubique.backend.payment.postfinance")
+@ConfigurationProperties(prefix = "ch.uetlib.payment.postfinance")
 public record PostfinancePaymentProviderProperties(
         long spaceId,
         long userId,

@@ -2,22 +2,32 @@
 
 ## 3.0.0 (unreleased)
 
+- Rename uetlib configuration keys and property references to `ch.uetlib.*`, including Spring bindings, `@Value`,
+  conditions, scheduling expressions and configuration files. Migrate external deployment configuration as well.
+
 - Move Java packages and class references from `ch.ubique.uetlib` to `ch.uetlib`.
 
 ### Breaking changes
 
-- Inline the Datatrans API client model and service into `uetlib-payment-datatrans`. Replace the old `ch.ubique.datatrans:datatrans-api-client-model` / `datatrans-api-client-service` dependencies with `ch.uetlib:uetlib-payment-datatrans:3.0.0`; packages move to `ch.uetlib.payment.datatrans.client`. The migration recipe handles these changes. Existing client credentials and provider configuration keys remain unchanged.
+- Inline the Datatrans API client model and service into `uetlib-payment-datatrans`. Replace the old
+  `ch.ubique.datatrans:datatrans-api-client-model` / `datatrans-api-client-service` dependencies with
+  `ch.uetlib:uetlib-payment-datatrans:3.0.0`; packages move to `ch.uetlib.payment.datatrans.client`. The migration
+  recipe handles these changes. Existing client credentials and provider configuration keys remain unchanged.
 
-- Move Java packages from `ch.ubique.backend` to `ch.uetlib`, including class-name resources. Existing Spring configuration property keys are unchanged.
-- Remove the inherited Ubique Artifactory repository and deployment destination; private consumers must configure their own registry.
-- Add Apache-2.0 licensing for original code, preserve third-party licenses, and add public project metadata and contribution/security guidance.
+- Move Java packages from `ch.ubique.backend` to `ch.uetlib`, including class-name resources. The combined OpenRewrite
+  migration also renames known Spring configuration keys to `ch.uetlib.*`.
+- Remove the inherited Ubique Artifactory repository and deployment destination; private consumers must configure their
+  own registry.
+- Add Apache-2.0 licensing for original code, preserve third-party licenses, and add public project metadata and
+  contribution/security guidance.
 
 - Move Maven coordinates from `ch.ubique:uetlib-*` to `ch.uetlib:uetlib-*`.
 - Align uetlib parent, BOM and library references with the migration releases.
 
 ### Migration
 
-After the migration releases and `uetlib-rewrite` are published, run this from the consuming project, then review the diff and run its tests:
+After the migration releases and `uetlib-rewrite` are published, run this from the consuming project, then review the
+diff and run its tests:
 
 ```sh
 mvn -U org.openrewrite.maven:rewrite-maven-plugin:6.46.1:run \
@@ -25,8 +35,9 @@ mvn -U org.openrewrite.maven:rewrite-maven-plugin:6.46.1:run \
   -Drewrite.activeRecipes=ch.uetlib.MigrateToPublicUetlib
 ```
 
-The recipe updates Maven coordinates/versions, Java references and known class-name resources. Review application-owned packages under the old namespace, Kotlin, reflection patterns, native-access module flags and persisted class names separately. Use `:dryRun` instead of `:run` to preview a patch.
-
+The recipe updates Maven coordinates/versions, Java references and known class-name resources. Review application-owned
+packages under the old namespace, Kotlin, reflection patterns, native-access module flags and persisted class names
+separately. Use `:dryRun` instead of `:run` to preview a patch.
 
 ## 2.0.8 - 2026-08-25
 
@@ -49,7 +60,8 @@ The recipe updates Maven coordinates/versions, Java references and known class-n
 
 ### Improved
 
-- Validate PostFinance auth key directly on config properties with a new annotation. Gives nicer errors on startup, like:
+- Validate PostFinance auth key directly on config properties with a new annotation. Gives nicer errors on startup,
+  like:
   ```
   Binding to target ch.ubique.backend.payment.postfinance.PostfinancePaymentProviderProperties failed:
   
