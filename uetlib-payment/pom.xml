@@ -5,16 +5,19 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>ch.ubique</groupId>
+        <groupId>ch.uetlib</groupId>
         <artifactId>uetlib-payment-parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>uetlib-payment</artifactId>
     <name>uetlib-payment</name>
 
+    <description>Payment abstractions and provider integrations.</description>
+    <url>https://github.com/UbiqueInnovation/uetlib-payment</url>
+
     <properties>
-        <artifact-package-name>ch.ubique.backend.payment</artifact-package-name>
+        <artifact-package-name>ch.uetlib.payment</artifact-package-name>
     </properties>
 
     <dependencies>

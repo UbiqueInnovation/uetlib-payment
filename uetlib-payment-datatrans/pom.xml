@@ -5,41 +5,39 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>ch.ubique</groupId>
+        <groupId>ch.uetlib</groupId>
         <artifactId>uetlib-payment-parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>uetlib-payment-datatrans</artifactId>
     <name>uetlib-payment-datatrans</name>
 
+    <description>Payment abstractions and provider integrations.</description>
+    <url>https://github.com/UbiqueInnovation/uetlib-payment</url>
+
     <properties>
-        <artifact-package-name>ch.ubique.backend.payment.datatrans</artifact-package-name>
+        <artifact-package-name>ch.uetlib.payment.datatrans</artifact-package-name>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>ch.ubique</groupId>
+            <groupId>ch.uetlib</groupId>
             <artifactId>uetlib-payment</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>ch.ubique</groupId>
+            <groupId>ch.uetlib</groupId>
             <artifactId>uetlib-spring-boot</artifactId>
         </dependency>
         <dependency>
-            <groupId>ch.ubique</groupId>
+            <groupId>ch.uetlib</groupId>
             <artifactId>uetlib-spring-cloud</artifactId>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-restclient</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.ubique.datatrans</groupId>
-            <artifactId>datatrans-api-client-service</artifactId>
         </dependency>
 
         <dependency>
@@ -64,21 +62,24 @@
             <artifactId>mockito-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>ch.ubique.datatrans</groupId>
-                <artifactId>datatrans-api-client-model</artifactId>
-                <version>1.0.0</version>
-            </dependency>
-
-            <dependency>
-                <groupId>ch.ubique.datatrans</groupId>
-                <artifactId>datatrans-api-client-service</artifactId>
-                <version>1.0.0</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 </project>
