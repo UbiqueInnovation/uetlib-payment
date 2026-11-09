@@ -1,0 +1,7 @@
+### get datatrans
+GET {{datatransBaseurl}}/todo
+
+
+### get datatrans
+GET {{datatransBaseurl}}/v1/transactions/240313170447077783
+Authorization: Basic {{base64auth}}

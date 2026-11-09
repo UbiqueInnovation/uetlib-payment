@@ -4,26 +4,29 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>ch.ubique</groupId>
+        <groupId>ch.uetlib</groupId>
         <artifactId>uetlib-payment-parent</artifactId>
-        <version>3.0.0-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>uetlib-payment-postfinance</artifactId>
     <name>uetlib-payment-postfinance</name>
 
+    <description>Payment abstractions and provider integrations.</description>
+    <url>https://github.com/UbiqueInnovation/uetlib-payment</url>
+
     <properties>
-        <artifact-package-name>ch.ubique.backend.payment.postfinance</artifact-package-name>
+        <artifact-package-name>ch.uetlib.payment.postfinance</artifact-package-name>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>ch.ubique</groupId>
+            <groupId>ch.uetlib</groupId>
             <artifactId>uetlib-payment</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>ch.ubique</groupId>
+            <groupId>ch.uetlib</groupId>
             <artifactId>uetlib-spring-boot</artifactId>
         </dependency>
 
@@ -82,7 +85,7 @@
             <dependency>
                 <groupId>ch.postfinance</groupId>
                 <artifactId>postfinancecheckout-java-sdk</artifactId>
-                <version>9.5.0</version>
+                <version>10.0.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
