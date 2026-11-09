@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.0.1
+
+- Migrate payment provider and Datatrans client configuration properties to `ch.uetlib.*`, including credential
+  placeholders and tests.
+- Align the Spring Boot dependency with the configuration migration release.
+- Update shared Maven build and publish workflows to v0.2.4.
+- Update to Spring Boot 4.1.2 / Spring Cloud 2025.1.4
+- Update to PostFinance Java SDK 10.0.0
+
 ## 3.0.0 (unreleased)
 
 - Rename uetlib configuration keys and property references to `ch.uetlib.*`, including Spring bindings, `@Value`,
