@@ -97,7 +97,7 @@ info:
     Example:
     ```sh
     curl -i 'https://api.sandbox.datatrans.com/v1/transactions' \
-        -H 'Authorization: Basic dXNlcjpwYXNzd29yZA==' \
+        -H 'Authorization: Basic bWVyY2hhbnRJZDpwYXNzd29yZA==' \
         -H 'Content-Type: application/json; charset=UTF-8' \
         -H 'Idempotency-Key: e75d621b-0e56-4b71-b889-1acec3e9d870' \
         -d '{
@@ -121,11 +121,11 @@ info:
     are able to handle the base64 encoding automatically) and submit the Authorization header with your requests. Here’s an example:
 
     ```
-    base64(merchantId:password) = dXNlcjpwYXNzd29yZA==
+    base64(merchantId:password) = bWVyY2hhbnRJZDpwYXNzd29yZA==
     ```
 
     ```
-    Authorization: Basic dXNlcjpwYXNzd29yZA==
+    Authorization: Basic bWVyY2hhbnRJZDpwYXNzd29yZA==
     ````
 
     All API requests must be done over HTTPS with TLS >= 1.2.
