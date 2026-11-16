@@ -1,10 +1,12 @@
 package ch.ubique.backend.payment.model;
 
+import org.jspecify.annotations.Nullable;
+
 /** Neutral billing address passed to a payment provider. */
 public record PaymentBillingAddress(
-        String street,
-        String houseNumber,
-        String addendum,
-        String city,
-        String zip,
-        String countryCode) {}
+        @Nullable String street,
+        @Nullable String houseNumber,
+        @Nullable String addendum,
+        @Nullable String city,
+        @Nullable String zip,
+        @Nullable String countryCode) {}
