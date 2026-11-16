@@ -1,1 +1,2 @@
-ch.ubique.backend.payment.datatrans.DatatransPaymentProviderAutoConfiguration
+ch.uetlib.payment.datatrans.DatatransPaymentProviderAutoConfiguration
+ch.uetlib.payment.datatrans.client.service.autoconfigure.DatatransApiClientAutoConfiguration
