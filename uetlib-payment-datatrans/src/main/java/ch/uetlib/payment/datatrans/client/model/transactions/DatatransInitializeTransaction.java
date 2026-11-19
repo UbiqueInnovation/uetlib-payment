@@ -16,8 +16,6 @@ import org.jspecify.annotations.Nullable;
 import java.util.List;
 
 /**
- * @param currency
- * @param refno
  * @param amount Specified in the currency smallest unit. E.g. 1000 for 10.00 CHF
  */
 @JsonIgnoreProperties(ignoreUnknown = true)

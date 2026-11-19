@@ -11,7 +11,6 @@ import jakarta.validation.constraints.NotBlank;
 import org.jspecify.annotations.Nullable;
 
 /**
- * @param transactionId
  * @param redirectUrl not set in response from datatrans, but returned as header `Location` and set
  *     by the DatatransTransactionsClient
  */
