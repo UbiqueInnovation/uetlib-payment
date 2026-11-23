@@ -30,14 +30,12 @@ class DatatransApiClientAutoConfigurationTest {
                         "spring.cloud.openfeign.client.config.datatrans-transactions.url=https://example.invalid",
                         "ch.uetlib.payment.datatrans.client.merchant-id=test-merchant",
                         "ch.uetlib.payment.datatrans.client.password=test-password")
-                .run(
-                        context -> {
-                            assertThat(context)
-                                    .hasNotFailed()
-                                    .hasSingleBean(DatatransTransactionClient.class)
-                                    .hasSingleBean(DatatransTransactionsFeignClient.class)
-                                    .doesNotHaveBean(DatatransPaymentProvider.class);
-                        });
+                .run(context ->
+                        assertThat(context)
+                                .hasNotFailed()
+                                .hasSingleBean(DatatransTransactionClient.class)
+                                .hasSingleBean(DatatransTransactionsFeignClient.class)
+                                .doesNotHaveBean(DatatransPaymentProvider.class));
     }
 
     @Test
@@ -51,12 +49,11 @@ class DatatransApiClientAutoConfigurationTest {
                 .withBean(
                         tools.jackson.databind.ObjectMapper.class,
                         () -> JsonMapper.builder().build())
-                .run(
-                        context ->
-                                assertThat(context)
-                                        .hasNotFailed()
-                                        .hasSingleBean(DatatransTransactionClient.class)
-                                        .hasSingleBean(DatatransTransactionsFeignClient.class)
-                                        .hasSingleBean(DatatransPaymentProvider.class));
+                .run(context ->
+                        assertThat(context)
+                                .hasNotFailed()
+                                .hasSingleBean(DatatransTransactionClient.class)
+                                .hasSingleBean(DatatransTransactionsFeignClient.class)
+                                .hasSingleBean(DatatransPaymentProvider.class));
     }
 }

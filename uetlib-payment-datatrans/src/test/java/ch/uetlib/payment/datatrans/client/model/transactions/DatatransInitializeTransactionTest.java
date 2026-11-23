@@ -53,11 +53,10 @@ class DatatransInitializeTransactionTest {
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("currency must not be null");
 
-        assertThatThrownBy(
-                        () ->
-                                DatatransInitializeTransaction.builder()
-                                        .currency(DatatransCurrency.CHF)
-                                        .build())
+        assertThatThrownBy(() ->
+                        DatatransInitializeTransaction.builder()
+                                .currency(DatatransCurrency.CHF)
+                                .build())
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("refno must not be null");
     }
